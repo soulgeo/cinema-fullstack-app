@@ -17,4 +17,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
 EXPOSE 8000
-CMD ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["./entrypoint.sh"]
