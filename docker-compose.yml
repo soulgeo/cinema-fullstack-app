@@ -5,16 +5,22 @@ services:
       - '8000:8000'
     volumes:
       - ./backend:/app
-      - /.venv
+      - /app/.venv
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - DB_HOST=db
+    env_file:
+      - ./backend/.env
   db:
     image: postgres:17
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./backend/.env
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+      POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
