@@ -20,7 +20,7 @@ const Signup = ({ closeModal, onShowLogin }: SignupProps) => {
   const navigate = useNavigate();
   const { signup } = useAuth();
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
     if (password !== password2) {
@@ -42,7 +42,7 @@ const Signup = ({ closeModal, onShowLogin }: SignupProps) => {
         closeModal();
       }
       navigate("/");
-    } catch (err) {
+    } catch {
       // Error handled by toast
     }
   };

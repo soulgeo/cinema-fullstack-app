@@ -30,7 +30,7 @@ const Logout = ({ closeModal }: LogoutProps) => {
         closeModal();
       }
       navigate("/");
-    } catch (err) {
+    } catch {
       // Error handled by toast
     }
   };

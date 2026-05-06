@@ -35,7 +35,7 @@ const Login = ({ closeModal, onShowSignup }: LoginProps) => {
         closeModal();
       }
       navigate("/");
-    } catch (err) {
+    } catch {
       // Error handled by toast
     }
   };

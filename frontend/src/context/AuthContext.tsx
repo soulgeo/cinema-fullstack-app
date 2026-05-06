@@ -48,7 +48,7 @@ export function AuthProvider({ children }: Props) {
         setCurrentUser(null);
         setUserLoggedIn(false);
       }
-    } catch (error) {
+    } catch {
       setCurrentUser(null);
       setUserLoggedIn(false);
     } finally {
