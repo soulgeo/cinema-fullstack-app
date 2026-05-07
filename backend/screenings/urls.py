@@ -6,6 +6,7 @@ router = DefaultRouter()
 router.register(r'movies', MovieViewSet)
 router.register(r'halls', HallViewSet)
 router.register(r'screenings', ScreeningViewSet)
+router.register(r'seats', SeatViewSet)
 router.register(r'tickets', TicketViewSet)
 
 urlpatterns = [

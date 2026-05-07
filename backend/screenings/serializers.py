@@ -28,4 +28,7 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = '__all__'
-        read_only_fields = ('client', 'price_paid', 'created_at')
+        read_only_fields = ('price_paid', 'created_at')
+        extra_kwargs = {
+            'client': {'required': False}
+        }
