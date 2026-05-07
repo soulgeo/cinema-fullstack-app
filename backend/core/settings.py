@@ -79,6 +79,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
@@ -126,8 +127,8 @@ else:
             "NAME": env("POSTGRES_DB"),
             "USER": env("POSTGRES_USER"),
             "PASSWORD": env("POSTGRES_PASSWORD"),
-            "HOST": "db",  # set in docker-compose.yml
-            "PORT": 5432,  # default postgres port
+            "HOST": env("DB_HOST", default="db"),
+            "PORT": env("DB_PORT", default=5432),
         }
     }
 
