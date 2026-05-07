@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -55,10 +56,14 @@ class Screening(models.Model):
             ).exclude(pk=self.pk)
 
             for screening in overlapping_screenings:
-                screening_end_time = screening.start_time + screening.movie.duration
+                screening_end_time = (
+                    screening.start_time + screening.movie.duration
+                )
                 if screening_end_time > self.start_time:
                     raise ValidationError(
-                        _("This screening overlaps with another screening in the same hall.")
+                        _(
+                            "This screening overlaps with another screening in the same hall."
+                        )
                     )
 
     def save(self, *args, **kwargs):
@@ -87,7 +92,7 @@ class Seat(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['hall', 'row_label', 'seat_number'],
-                name='unique_seat_per_hall'
+                name='unique_seat_per_hall',
             )
         ]
 
@@ -142,7 +147,11 @@ class Ticket(models.Model):
                 )
 
             if not self.price_paid:
-                multiplier = Decimal('1.5') if self.seat.seat_type == Seat.SeatType.VIP else Decimal('1.0')
+                multiplier = (
+                    Decimal('1.5')
+                    if self.seat.seat_type == Seat.SeatType.VIP
+                    else Decimal('1.0')
+                )
                 self.price_paid = self.screening.base_price * multiplier
 
     def __str__(self):
