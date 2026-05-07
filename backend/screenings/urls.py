@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from screenings.views import MovieViewSet, HallViewSet, ScreeningViewSet, TicketViewSet
+from screenings.views import MovieViewSet, HallViewSet, ScreeningViewSet, TicketViewSet, SeatViewSet
 
 router = DefaultRouter()
 router.register(r'movies', MovieViewSet)
