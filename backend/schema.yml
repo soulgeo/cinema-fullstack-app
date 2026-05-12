@@ -1,0 +1,1056 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/halls/:
+    get:
+      operationId: halls_list
+      tags:
+      - halls
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hall'
+          description: ''
+    post:
+      operationId: halls_create
+      tags:
+      - halls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hall'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Hall'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Hall'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hall'
+          description: ''
+  /api/halls/{id}/:
+    get:
+      operationId: halls_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hall.
+        required: true
+      tags:
+      - halls
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hall'
+          description: ''
+    put:
+      operationId: halls_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hall.
+        required: true
+      tags:
+      - halls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hall'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Hall'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Hall'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hall'
+          description: ''
+    patch:
+      operationId: halls_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hall.
+        required: true
+      tags:
+      - halls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHall'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHall'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHall'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hall'
+          description: ''
+    delete:
+      operationId: halls_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hall.
+        required: true
+      tags:
+      - halls
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/movies/:
+    get:
+      operationId: movies_list
+      tags:
+      - movies
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+          description: ''
+    post:
+      operationId: movies_create
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Movie'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Movie'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+          description: ''
+  /api/movies/{id}/:
+    get:
+      operationId: movies_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movie.
+        required: true
+      tags:
+      - movies
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+          description: ''
+    put:
+      operationId: movies_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movie.
+        required: true
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Movie'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Movie'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+          description: ''
+    patch:
+      operationId: movies_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movie.
+        required: true
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMovie'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMovie'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMovie'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+          description: ''
+    delete:
+      operationId: movies_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movie.
+        required: true
+      tags:
+      - movies
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/screenings/:
+    get:
+      operationId: screenings_list
+      tags:
+      - screenings
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Screening'
+          description: ''
+    post:
+      operationId: screenings_create
+      tags:
+      - screenings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Screening'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Screening'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Screening'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Screening'
+          description: ''
+  /api/screenings/{id}/:
+    get:
+      operationId: screenings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this screening.
+        required: true
+      tags:
+      - screenings
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Screening'
+          description: ''
+    put:
+      operationId: screenings_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this screening.
+        required: true
+      tags:
+      - screenings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Screening'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Screening'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Screening'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Screening'
+          description: ''
+    patch:
+      operationId: screenings_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this screening.
+        required: true
+      tags:
+      - screenings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedScreening'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedScreening'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedScreening'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Screening'
+          description: ''
+    delete:
+      operationId: screenings_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this screening.
+        required: true
+      tags:
+      - screenings
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/seats/:
+    get:
+      operationId: seats_list
+      tags:
+      - seats
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seat'
+          description: ''
+    post:
+      operationId: seats_create
+      tags:
+      - seats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seat'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Seat'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Seat'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+          description: ''
+  /api/seats/{id}/:
+    get:
+      operationId: seats_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this seat.
+        required: true
+      tags:
+      - seats
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+          description: ''
+    put:
+      operationId: seats_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this seat.
+        required: true
+      tags:
+      - seats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seat'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Seat'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Seat'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+          description: ''
+    patch:
+      operationId: seats_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this seat.
+        required: true
+      tags:
+      - seats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSeat'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSeat'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSeat'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+          description: ''
+    delete:
+      operationId: seats_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this seat.
+        required: true
+      tags:
+      - seats
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/tickets/:
+    get:
+      operationId: tickets_list
+      tags:
+      - tickets
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+          description: ''
+    post:
+      operationId: tickets_create
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+  /api/tickets/{id}/:
+    get:
+      operationId: tickets_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    put:
+      operationId: tickets_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    patch:
+      operationId: tickets_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTicket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTicket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTicket'
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    delete:
+      operationId: tickets_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Hall:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        rows_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        cols_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        dolby_atmos:
+          type: boolean
+      required:
+      - cols_count
+      - dolby_atmos
+      - id
+      - name
+      - rows_count
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        producer:
+          type: string
+          maxLength: 100
+        release_date:
+          type: string
+          format: date
+        duration:
+          type: string
+        rating:
+          type: string
+          maxLength: 10
+        poster_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        genres:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+      required:
+      - description
+      - duration
+      - id
+      - producer
+      - rating
+      - release_date
+      - title
+    PatchedHall:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        rows_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        cols_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        dolby_atmos:
+          type: boolean
+    PatchedMovie:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        producer:
+          type: string
+          maxLength: 100
+        release_date:
+          type: string
+          format: date
+        duration:
+          type: string
+        rating:
+          type: string
+          maxLength: 10
+        poster_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        genres:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+    PatchedScreening:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        movie_title:
+          type: string
+          readOnly: true
+        hall_name:
+          type: string
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+        base_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        movie:
+          type: integer
+        hall:
+          type: integer
+    PatchedSeat:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        row_label:
+          type: string
+          maxLength: 7
+        seat_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        grid_x:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        grid_y:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        seat_type:
+          $ref: '#/components/schemas/SeatTypeEnum'
+        hall:
+          type: integer
+    PatchedTicket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        price_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        client:
+          type: integer
+        screening:
+          type: integer
+        seat:
+          type: integer
+    Screening:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        movie_title:
+          type: string
+          readOnly: true
+        hall_name:
+          type: string
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+        base_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        movie:
+          type: integer
+        hall:
+          type: integer
+      required:
+      - hall
+      - hall_name
+      - id
+      - movie
+      - movie_title
+      - start_time
+    Seat:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        row_label:
+          type: string
+          maxLength: 7
+        seat_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        grid_x:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        grid_y:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        seat_type:
+          $ref: '#/components/schemas/SeatTypeEnum'
+        hall:
+          type: integer
+      required:
+      - grid_x
+      - grid_y
+      - hall
+      - id
+      - row_label
+      - seat_number
+    SeatTypeEnum:
+      enum:
+      - REGULAR
+      - VIP
+      type: string
+      description: |-
+        * `REGULAR` - Regular
+        * `VIP` - VIP
+    StatusEnum:
+      enum:
+      - RESERVED
+      - PAID
+      - CANCELLED
+      type: string
+      description: |-
+        * `RESERVED` - Reserved
+        * `PAID` - Paid
+        * `CANCELLED` - Cancelled
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        price_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        client:
+          type: integer
+        screening:
+          type: integer
+        seat:
+          type: integer
+      required:
+      - created_at
+      - id
+      - price_paid
+      - screening
+      - seat
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

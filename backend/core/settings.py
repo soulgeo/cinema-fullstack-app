@@ -24,7 +24,7 @@ DEBUG = env('DEBUG')
 # exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'rest_framework',
+    'drf_spectacular',
     'corsheaders',
     'allauth',
     'allauth.account',
@@ -82,6 +83,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Allauth Settings
@@ -170,9 +172,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
+# Allauth Headless
 # These are the URLs to be implemented on the frontend
 HEADLESS_FRONTEND_URLS = {
     "account_confirm_email": "https://app.project.org/account/verify-email/{key}",
     "account_reset_password_from_key": "https://app.org/account/password/reset/key/{key}",
     "account_signup": "https://app.org/account/signup",
 }
+
+HEADLESS_ONLY = True

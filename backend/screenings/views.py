@@ -62,8 +62,8 @@ class SeatViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self) -> Any:  # type: ignore[override]
         queryset = Seat.objects.all()
-        r: Any = self.request
-        hall_id = r.query_params.get('hall')
+        request: Any = self.request
+        hall_id = request.query_params.get('hall')
         if hall_id is not None:
             queryset = queryset.filter(hall_id=hall_id)
         return queryset
@@ -83,27 +83,25 @@ class TicketViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self) -> Any:  # type: ignore[override]
-        user = self.request.user
+        user: Any = self.request.user
         if not user.is_authenticated:
             return Ticket.objects.none()
 
-        u: Any = user
         if (
-            u.is_superuser
-            or u.groups.filter(name__in=['Staff', 'Admin']).exists()
+            user.is_superuser
+            or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
             return Ticket.objects.all()
-        return Ticket.objects.filter(client=u)
+        return Ticket.objects.filter(client=user)
 
     def perform_create(self, serializer):
-        user = self.request.user
-        u: Any = user
+        user: Any = self.request.user
         is_staff_or_admin = (
-            u.is_superuser
-            or u.groups.filter(name__in=['Staff', 'Admin']).exists()
+            user.is_superuser
+            or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         )
-        req: Any = self.request
-        if is_staff_or_admin and 'client' in req.data:
+        request: Any = self.request
+        if is_staff_or_admin and 'client' in request.data:
             serializer.save()
         else:
             serializer.save(client=user)
