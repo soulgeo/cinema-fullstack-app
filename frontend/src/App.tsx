@@ -2,6 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import { resolveValue, Toaster } from "react-hot-toast";
 import CustomToast from "./components/ui/CustomToast";
 import HomePage from "./components/pages/HomePage";
+import MoviePage from "./components/pages/MoviePage";
+import BookingPage from "./components/pages/BookingPage";
 import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
@@ -9,6 +11,14 @@ const router = createBrowserRouter([
     path: "/",
     element: <HomePage />,
   },
+  {
+    path: "/movies/:id",
+    element: <MoviePage />,
+  },
+  {
+    path: "/booking",
+    element:<BookingPage />,
+  }
 ]);
 
 function App() {

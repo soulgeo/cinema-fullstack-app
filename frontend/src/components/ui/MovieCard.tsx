@@ -1,4 +1,5 @@
 import { Clock, Star } from "lucide-react";
+import { Link } from "react-router";
 import type { Movie } from "../../api/types";
 
 interface Props {
@@ -18,7 +19,10 @@ const MovieCard = ({ movie }: Props) => {
   };
 
   return (
-    <div className="card card-compact bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-base-300">
+    <Link 
+      to={`/movies/${movie.id}`}
+      className="card card-compact bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-base-300 cursor-pointer"
+    >
       <figure className="relative aspect-[2/3] overflow-hidden">
         <img
           src={movie.poster_url || "https://via.placeholder.com/500x750?text=No+Poster"}
@@ -42,10 +46,10 @@ const MovieCard = ({ movie }: Props) => {
             <Clock size={14} className="text-primary" />
             {formatDuration(movie.duration)}
           </div>
-          <button className="btn btn-primary btn-sm btn-outline">Details</button>
+          <div className="btn btn-primary btn-sm btn-outline">Details</div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

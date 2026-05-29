@@ -48,6 +48,14 @@ class ScreeningViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
+    def get_queryset(self) -> Any:  # type: ignore[override]
+        queryset = Screening.objects.all()
+        request: Any = self.request
+        movie_id = request.query_params.get('movie')
+        if movie_id is not None:
+            queryset = queryset.filter(movie_id=movie_id)
+        return queryset
+
 
 class SeatViewSet(viewsets.ModelViewSet):
     queryset = Seat.objects.all()

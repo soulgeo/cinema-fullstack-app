@@ -40,7 +40,10 @@ export const dbApi = {
   },
 
   screenings: {
-    list: () => dbRequest<Screening[]>("/screenings/"),
+    list: (movieId?: number) => {
+      const path = movieId ? `/screenings/?movie=${movieId}` : "/screenings/";
+      return dbRequest<Screening[]>(path);
+    },
     get: (id: number) => dbRequest<Screening>(`/screenings/${id}/`),
     create: (data: Partial<Screening>) => dbRequest<Screening>("/screenings/", {
       method: "POST",
