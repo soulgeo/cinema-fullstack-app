@@ -76,6 +76,7 @@ export const dbApi = {
 
   tickets: {
     list: () => dbRequest<Ticket[]>("/tickets/"),
+    listByScreening: (screeningId: number) => dbRequest<Ticket[]>(`/tickets/?screening=${screeningId}`),
     get: (id: number) => dbRequest<Ticket>(`/tickets/${id}/`),
     create: (data: Partial<Ticket>) => dbRequest<Ticket>("/tickets/", {
       method: "POST",

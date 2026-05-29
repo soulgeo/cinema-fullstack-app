@@ -54,7 +54,7 @@ export type Screening = {
   id: number;
   movie: number;
   movie_title?: string;
-  hall: number;
+  hall: Hall;
   hall_name?: string;
   start_time: string;
   base_price: string;

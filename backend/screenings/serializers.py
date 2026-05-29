@@ -17,7 +17,7 @@ class HallSerializer(serializers.ModelSerializer):
 
 class ScreeningSerializer(serializers.ModelSerializer):
     movie_title = serializers.CharField(source='movie.title', read_only=True)
-    hall_name = serializers.CharField(source='hall.name', read_only=True)
+    hall = HallSerializer();
 
     class Meta:
         model = Screening

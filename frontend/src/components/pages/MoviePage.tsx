@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, useParams } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { dbApi } from "../../api/db";
 import type { Movie, Screening } from "../../api/types";
@@ -9,6 +9,7 @@ import Loading from "../ui/Loading";
 const MoviePage = () => {
   const { id } = useParams<{ id: string }>();
   const [movie, setMovie] = useState<Movie | null>(null);
+
   const [screenings, setScreenings] = useState<Screening[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +22,8 @@ const MoviePage = () => {
   const [hasMoved, setHasMoved] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +76,6 @@ const MoviePage = () => {
   };
 
   const handleMouseUp = () => {
-    // Small delay to ensure onClick doesn't fire if we just finished a drag
     setTimeout(() => {
       setIsDragging(false);
       setHasMoved(false);
@@ -86,7 +88,6 @@ const MoviePage = () => {
     const x = e.pageX - scrollRef.current.offsetLeft;
     const walk = x - startX;
     
-    // If we moved more than 5 pixels, consider it a drag
     if (Math.abs(walk) > 5) {
       setHasMoved(true);
     }
@@ -125,7 +126,12 @@ const MoviePage = () => {
   return (
     <Layout>
       <div className="flex flex-col w-full gap-8 py-8">
-        {/* Top Section: Movie Info */}
+          <button 
+            onClick={() => navigate(-1)}
+            className="btn btn-ghost btn-sm w-fit gap-2 pl-0"
+          >
+            <ChevronLeft size={16} /> Back to Home
+          </button>
         <section className="flex flex-col md:flex-row gap-8 bg-base-100 p-6 rounded-2xl shadow-xl">
           <div className="w-full md:w-1/3 lg:w-1/4">
             <div className="aspect-2/3 rounded-xl overflow-hidden shadow-lg bg-base-200">
@@ -255,7 +261,7 @@ const MoviePage = () => {
                       })}
                     </span>
                     <span className="text-sm opacity-70">
-                      Hall: {screening.hall_name || `Hall ${screening.hall}`}
+                      Hall: {screening.hall.name}
                     </span>
                   </div>
                   <div className="flex flex-row gap-4 items-center justify-end">

@@ -84,14 +84,14 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]
-        elif self.action in ['update', 'partial_update']:
-            permission_classes = [IsStaffUser]
         else:
             permission_classes = [IsStaffUser]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self) -> Any:  # type: ignore[override]
-        user: Any = self.request.user
+        request: Any = self.request
+        screening_id = request.query_params.get('screening')
+        user: Any = request.user
         if not user.is_authenticated:
             return Ticket.objects.none()
 
@@ -100,6 +100,8 @@ class TicketViewSet(viewsets.ModelViewSet):
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
             return Ticket.objects.all()
+        if (screening_id):
+            return Ticket.objects.filter(screening_id=screening_id)
         return Ticket.objects.filter(client=user)
 
     def perform_create(self, serializer):
