@@ -2,7 +2,7 @@
 
 @plugin "@tailwindcss/typography";
 @plugin "daisyui/index.js" {
-    themes: light --default, dark --prefersdark;
+    themes: luxury --default;
 }
 
 @keyframes progress {
