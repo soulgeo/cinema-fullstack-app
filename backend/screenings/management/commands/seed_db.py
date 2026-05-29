@@ -61,128 +61,101 @@ class Command(BaseCommand):
                             seat_type=seat_type
                         )
 
-        # 3. Create 12 Accurate Movies with TMDB Poster URLs
+        # 3. Create Accurate Movies with TMDB Poster URLs for May, June, and July 2026
+        self.stdout.write('Clearing existing movies...')
+        Movie.objects.all().delete()
+
         tmdb_base = "https://image.tmdb.org/t/p/w500"
         movies_data = [
             {
-                'title': 'The Fall Guy',
-                'description': 'A battered stuntman springs back into action.',
-                'producer': 'David Leitch',
-                'release_date': '2024-05-03',
-                'duration': timedelta(hours=2, minutes=6),
+                'title': 'Project Hail Mary',
+                'description': 'An astronaut tries to save Earth while alone in outer space.',
+                'producer': 'Phil Lord, Christopher Miller',
+                'release_date': '2026-03-20',
+                'duration': timedelta(hours=2, minutes=15),
                 'rating': 'PG-13',
-                'genres': 'Action, Comedy',
-                'poster_url': f'{tmdb_base}/ez7xavvDr5yDz4sSvI55xDp0BoU.jpg'
+                'genres': 'Sci-Fi, Adventure',
+                'poster_url': f'{tmdb_base}/yihdXomYb5kTeSivtFndMy5iDmf.jpg'
             },
             {
-                'title': 'Kingdom of the Planet of the Apes',
-                'description': 'Many years after the reign of Caesar, a young ape goes on a journey that will lead him to question everything.',
-                'producer': 'Wes Ball',
-                'release_date': '2024-05-10',
-                'duration': timedelta(hours=2, minutes=25),
+                'title': 'The Super Mario Galaxy Movie',
+                'description': 'Mario and friends travel through space to save the galaxy.',
+                'producer': 'Chris Meledandri',
+                'release_date': '2026-04-01',
+                'duration': timedelta(hours=1, minutes=45),
+                'rating': 'PG',
+                'genres': 'Animation, Adventure, Comedy',
+                'poster_url': f'{tmdb_base}/eJGWx219ZcEMVQJhAgMiqo8tYY.jpg'
+            },
+            {
+                'title': "Lee Cronin's The Mummy",
+                'description': 'A new take on the ancient Egyptian curse.',
+                'producer': 'Lee Cronin',
+                'release_date': '2026-04-17',
+                'duration': timedelta(hours=1, minutes=55),
+                'rating': 'R',
+                'genres': 'Horror, Fantasy, Action',
+                'poster_url': f'{tmdb_base}/uIb9Tvae5haF0XcQBaPyufmxbb0.jpg'
+            },
+            {
+                'title': 'Michael',
+                'description': 'The definitive biopic of the King of Pop, chronicling his rise from the Jackson 5 to global superstardom.',
+                'producer': 'Graham King, Antoine Fuqua',
+                'release_date': '2026-04-24',
+                'duration': timedelta(hours=2, minutes=30),
                 'rating': 'PG-13',
-                'genres': 'Sci-Fi, Action',
-                'poster_url': f'{tmdb_base}/gKkl37BQuKTanygYQG1pyYgLVgf.jpg'
+                'genres': 'Drama, Music, History',
+                'poster_url': f'https://glamournepal.com/wp-content/uploads/2025/11/Michael-Biopic-Film-Poster-2026.jpg'
             },
             {
-                'title': 'Furiosa: A Mad Max Saga',
-                'description': 'The origin story of renegade warrior Furiosa before she teamed up with Mad Max.',
-                'producer': 'George Miller',
-                'release_date': '2024-05-24',
-                'duration': timedelta(hours=2, minutes=28),
+                'title': 'Mortal Kombat II',
+                'description': 'The tournament continues with new fighters and higher stakes.',
+                'producer': 'James Wan',
+                'release_date': '2026-05-08',
+                'duration': timedelta(hours=2, minutes=10),
                 'rating': 'R',
-                'genres': 'Action, Adventure',
-                'poster_url': f'{tmdb_base}/iADOJ8Zymht2JPMoy3R7xceZprc.jpg'
+                'genres': 'Action, Fantasy',
+                'poster_url': f'{tmdb_base}/lIsMeDbwntNXSUVHmWMMRXEZOVc.jpg'
             },
             {
-                'title': 'Civil War',
-                'description': 'A journey across a futuristic hostile America with a team of military-embedded journalists.',
-                'producer': 'Alex Garland',
-                'release_date': '2024-04-12',
-                'duration': timedelta(hours=1, minutes=49),
-                'rating': 'R',
-                'genres': 'Action, Sci-Fi',
-                'poster_url': f'{tmdb_base}/bX2xnavhMYjWDoZp1VM6VnU1xwe.jpg'
+                'title': 'Masters of the Universe',
+                'description': 'Prince Adam / He-Man must protect Eternia from the dark forces of Skeletor.',
+                'producer': 'Travis Knight',
+                'release_date': '2026-06-05',
+                'duration': timedelta(hours=2, minutes=5),
+                'rating': 'PG-13',
+                'genres': 'Action, Fantasy, Adventure',
+                'poster_url': f'https://cdn.kinocheck.com/i/93nua8uz97.jpg'
             },
             {
-                'title': 'Challengers',
-                'description': 'Tashi, a former tennis prodigy turned coach, is married to a champion on a losing streak.',
-                'producer': 'Luca Guadagnino',
-                'release_date': '2024-04-26',
-                'duration': timedelta(hours=2, minutes=11),
-                'rating': 'R',
-                'genres': 'Drama, Sport',
-                'poster_url': f'{tmdb_base}/H6vke7zGfvqJ9Y60Wygnp39sC0.jpg'
-            },
-            {
-                'title': 'Inside Out 2',
-                'description': 'Riley, now a teenager, encounters new Emotions.',
-                'producer': 'Kelsey Mann',
-                'release_date': '2024-06-14',
-                'duration': timedelta(hours=1, minutes=36),
-                'rating': 'PG',
-                'genres': 'Animation, Adventure',
-                'poster_url': f'{tmdb_base}/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg'
-            },
-            {
-                'title': 'Deadpool & Wolverine',
-                'description': 'A weary Wolverine finds himself recovering from his injuries when he comes across a loudmouth Deadpool.',
-                'producer': 'Shawn Levy',
-                'release_date': '2024-07-26',
-                'duration': timedelta(hours=2, minutes=7),
-                'rating': 'R',
-                'genres': 'Action, Comedy, Sci-Fi',
-                'poster_url': f'{tmdb_base}/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg'
-            },
-            {
-                'title': 'Joker: Folie à Deux',
-                'description': 'Arthur Fleck is institutionalized at Arkham awaiting trial for his crimes as Joker.',
-                'producer': 'Todd Phillips',
-                'release_date': '2024-10-04',
-                'duration': timedelta(hours=2, minutes=18),
-                'rating': 'R',
-                'genres': 'Crime, Drama, Music',
-                'poster_url': f'{tmdb_base}/aciP8Km0waTLXEYf5ybFK5CSUxl.jpg'
-            },
-            {
-                'title': 'Gladiator II',
-                'description': 'After his home is conquered by the tyrannical Emperors who now lead Rome, Lucius is forced to enter the Colosseum.',
-                'producer': 'Ridley Scott',
-                'release_date': '2024-11-22',
-                'duration': timedelta(hours=2, minutes=28),
-                'rating': 'R',
-                'genres': 'Action, Adventure, Drama',
-                'poster_url': f'{tmdb_base}/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg'
-            },
-            {
-                'title': 'Wicked',
-                'description': 'The story of how a green-skinned woman framed by the Wizard of Oz becomes the Wicked Witch of the West.',
-                'producer': 'Jon M. Chu',
-                'release_date': '2024-11-22',
-                'duration': timedelta(hours=2, minutes=40),
-                'rating': 'PG',
-                'genres': 'Fantasy, Musical',
-                'poster_url': f'{tmdb_base}/dfdvUzj4nLZpZ37BoefqvevCMI1.jpg'
-            },
-            {
-                'title': 'Moana 2',
-                'description': 'Moana journeys to the far seas of Oceania after receiving an unexpected call from her wayfinding ancestors.',
-                'producer': 'David G. Derrick Jr.',
-                'release_date': '2024-11-27',
+                'title': 'Toy Story 5',
+                'description': 'Woody, Buzz, and the gang return for another adventure.',
+                'producer': 'Andrew Stanton',
+                'release_date': '2026-06-19',
                 'duration': timedelta(hours=1, minutes=40),
+                'rating': 'G',
+                'genres': 'Animation, Adventure, Family',
+                'poster_url': f'{tmdb_base}/i4UtdsApMwXQkGD2mBDroJSJZsk.jpg'
+            },
+            {
+                'title': 'Moana (Live-Action)',
+                'description': 'A young woman sets sail on a daring mission to save her people.',
+                'producer': 'Dwayne Johnson',
+                'release_date': '2026-07-10',
+                'duration': timedelta(hours=2, minutes=0),
                 'rating': 'PG',
-                'genres': 'Animation, Adventure',
+                'genres': 'Adventure, Fantasy, Family',
                 'poster_url': f'{tmdb_base}/aLVkiINlIeCkcZIzb7XHzPYgO6L.jpg'
             },
             {
-                'title': 'Nosferatu',
-                'description': 'A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her.',
-                'producer': 'Robert Eggers',
-                'release_date': '2024-12-25',
-                'duration': timedelta(hours=2, minutes=12),
-                'rating': 'R',
-                'genres': 'Horror, Fantasy',
-                'poster_url': f'{tmdb_base}/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg'
+                'title': 'Spider-Man: Brand New Day',
+                'description': 'Peter Parker\'s life is reset after the events of No Way Home.',
+                'producer': 'Kevin Feige',
+                'release_date': '2026-07-31',
+                'duration': timedelta(hours=2, minutes=20),
+                'rating': 'PG-13',
+                'genres': 'Action, Adventure, Sci-Fi',
+                'poster_url': f'{tmdb_base}/ucQ0QBXXQPSxeUmWfh4YQenIuB9.jpg'
             },
         ]
 
