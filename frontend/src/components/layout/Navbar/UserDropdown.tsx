@@ -21,6 +21,7 @@ const UserDropdown = () => {
     dialogRef.current?.close();
     setShowLogin(false);
     setShowSignup(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClosing(false);
   }, [location.pathname, setShowLogin, setShowSignup]);
 
@@ -111,9 +112,14 @@ const UserDropdown = () => {
           </ul>
         </div>
       ) : (
-        <button onClick={() => setShowLogin(true)} className="btn btn-ghost">
-          Log In
-        </button>
+        <div className="flex flex-row gap-2">
+          <button onClick={() => setShowLogin(true)} className="btn btn-ghost">
+            Log In
+          </button>
+          <button onClick={() => setShowSignup(true)} className="btn btn-primary">
+            Sign Up
+          </button>
+        </div>
       )}
 
       <dialog
