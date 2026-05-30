@@ -5,7 +5,8 @@ import type { Screening, Seat, Ticket } from "../../api/types";
 import Layout from "../layout/Layout";
 import Loading from "../ui/Loading";
 import { toast } from "react-hot-toast";
-import { ChevronLeft, Info, Armchair } from "lucide-react";
+import { Info, Armchair } from "lucide-react";
+import BackButton from "../ui/BackButton";
 
 const BookingPage = () => {
   const navigate = useNavigate();
@@ -107,12 +108,7 @@ const BookingPage = () => {
       <div className="w-full max-w-6xl py-8 flex flex-col gap-8">
         {/* Header */}
         <div className="flex flex-col gap-2">
-          <button 
-            onClick={() => navigate(-1)}
-            className="btn btn-ghost btn-sm w-fit gap-2 pl-0"
-          >
-            <ChevronLeft size={16} /> Back to Movie
-          </button>
+          <BackButton text="Back to Movie"/>
           <h1 className="text-3xl font-bold">Book Your Tickets</h1>
           <p className="text-base-content/70">
             {screening.movie_title} • {new Date(screening.start_time).toLocaleString([], { 
