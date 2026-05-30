@@ -60,7 +60,7 @@ const HomePage = () => {
     <Layout fullWidth>
       <div className="container mx-auto px-4 py-12">
         <header className="mb-12 text-center animate__animated animate__fadeIn">
-          <h1 className="text-5xl font-extrabold mb-4 pb-1 bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-5xl font-extrabold mb-4 pb-1 bg-linear-to-r from-base-content to-accent-content bg-clip-text text-transparent">
             {tab === Tab.SHOWING ? "Now Showing" : "Coming Soon"}
           </h1>
           <p className="text-lg opacity-70">
