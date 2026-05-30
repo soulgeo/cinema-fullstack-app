@@ -6,9 +6,10 @@ import Login from "../../ui/Login";
 import Signup from "../../ui/Signup";
 import { Link, useLocation } from "react-router";
 import 'animate.css';
+import { UserRound } from "lucide-react";
 
 const UserDropdown = () => {
-  const { userLoggedIn, showLogin, setShowLogin, showSignup, setShowSignup } =
+  const { currentUser, userLoggedIn, showLogin, setShowLogin, showSignup, setShowSignup } =
     useAuth();
   const location = useLocation();
 
@@ -87,19 +88,13 @@ const UserDropdown = () => {
   return (
     <>
       {userLoggedIn ? (
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
-          >
-            <div className="w-10 rounded-full">
-              <img alt="user_profile" src={profileImageUrl} />
-            </div>
+        <div className="dropdown dropdown-end dropdown-hover">
+          <div tabIndex={0} role="button" className="btn btn-outline px-3">
+            <UserRound size={18} strokeWidth={3}/>{currentUser?.username}
           </div>
           <ul
             tabIndex={-1}
-            className="menu menu-md dropdown-content bg-base-200 rounded-box mt-3 w-52 p-2 shadow"
+            className="menu menu-md dropdown-content bg-base-200 rounded-box w-52 p-2 shadow"
           >
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -112,13 +107,18 @@ const UserDropdown = () => {
           </ul>
         </div>
       ) : (
-        <div className="flex flex-row gap-2">
-          <button onClick={() => setShowLogin(true)} className="btn btn-ghost">
-            Log In
-          </button>
-          <button onClick={() => setShowSignup(true)} className="btn btn-primary">
-            Sign Up
-          </button>
+        <div className="dropdown dropdown-end dropdown-hover">
+          <div tabIndex={0} role="button" className="btn btn-outline px-3">
+            <UserRound size={18} strokeWidth={3}/> Members
+          </div>
+          <ul tabIndex={-1} className="menu menu-md dropdown-content bg-base-200 rounded-box w-52 p-2 shadow">
+            <li>
+              <span onClick={() => setShowLogin(true)}> Login </span>
+            </li>
+            <li>
+              <span onClick={() => setShowSignup(true)}> Become a Member </span>
+            </li>
+          </ul>
         </div>
       )}
 

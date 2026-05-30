@@ -9,9 +9,10 @@ import { useAuth } from "../../context/AuthContext";
 interface LoginProps {
   closeModal?: () => void;
   onShowSignup?: () => void;
+  next?: string;
 }
 
-const Login = ({ closeModal, onShowSignup }: LoginProps) => {
+const Login = ({ closeModal, onShowSignup, next }: LoginProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +35,7 @@ const Login = ({ closeModal, onShowSignup }: LoginProps) => {
       if (closeModal) {
         closeModal();
       }
-      navigate("/");
+      navigate(next ?? "/");
     } catch {
       // Error handled by toast
     }
