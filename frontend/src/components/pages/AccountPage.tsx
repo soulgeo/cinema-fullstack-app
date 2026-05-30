@@ -5,7 +5,7 @@ import Layout from "../layout/Layout";
 import BackButton from "../ui/BackButton";
 import Input from "../ui/Input";
 import { toast } from "react-hot-toast";
-import { User, Key, Save, KeyIcon, KeyRound, KeyRoundIcon } from "lucide-react";
+import { User, Key, Save, KeyRoundIcon } from "lucide-react";
 
 const AccountPage = () => {
   const { currentUser, updateUser } = useAuth();
@@ -36,7 +36,7 @@ const AccountPage = () => {
           phone_number: currentUser.phone_number || "",
           date_of_birth: currentUser.date_of_birth || "",
         });
-      }) ();
+      })();
     }
   }, [currentUser]);
 
@@ -229,7 +229,7 @@ const AccountPage = () => {
               >
                 {isUpdatingPassword ? "Updating..." : (
                   <>
-                    <KeyRoundIcon size={22} className="mr-2"/> Change Password
+                    <KeyRoundIcon size={22} className="mr-2" /> Change Password
                   </>
                 )}
               </button>
