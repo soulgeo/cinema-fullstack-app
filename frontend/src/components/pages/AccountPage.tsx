@@ -196,7 +196,7 @@ const AccountPage = () => {
                 name="current_password"
                 value={passwordData.current_password}
                 onChange={handlePasswordChange}
-                placeholder="••••••••"
+                placeholder="Enter Current Password"
                 required
               />
 
@@ -208,7 +208,7 @@ const AccountPage = () => {
                 name="new_password"
                 value={passwordData.new_password}
                 onChange={handlePasswordChange}
-                placeholder="••••••••"
+                placeholder="Enter New Password"
                 required
               />
 
@@ -218,7 +218,7 @@ const AccountPage = () => {
                 name="confirm_password"
                 value={passwordData.confirm_password}
                 onChange={handlePasswordChange}
-                placeholder="••••••••"
+                placeholder="Confirm New Password"
                 required
               />
 

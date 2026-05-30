@@ -1,7 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState } from "react";
 import type { Screening } from "../../api/types";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 interface ScreeningSelectProps {
   screenings: Screening[]
@@ -16,6 +17,8 @@ const ScreeningSelect = ({ screenings }: ScreeningSelectProps) => {
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
+  const {userLoggedIn, setShowLogin} = useAuth();
+  const navigate = useNavigate();
   
   const dates = Array.from({ length: 14 }, (_, i) => {
     const d = new Date();
@@ -64,6 +67,14 @@ const ScreeningSelect = ({ screenings }: ScreeningSelectProps) => {
     
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
+
+  const handleBookClick = (screening: Screening) => {
+    if (!userLoggedIn) {
+      setShowLogin(true);
+      return;
+    }
+    navigate("/booking", { state: screening });
+  }
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -164,7 +175,7 @@ const ScreeningSelect = ({ screenings }: ScreeningSelectProps) => {
                 <span className="text-lg font-semibold">
                   €{screening.base_price}
                 </span>
-                <Link to="/booking" state={screening} className="btn btn-primary">Book Now</Link>
+                <button onClick={() => handleBookClick(screening)} className="btn btn-primary">Book Now</button>
               </div>
             </div>
           ))
