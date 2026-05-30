@@ -56,4 +56,18 @@ export const authApi = {
       localStorage.removeItem("auth_hint");
     }
   },
+
+  updateUser: async (data: Partial<User>): Promise<AuthResponse> => {
+    return authRequest<AuthResponse>("/auth/user", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  },
+
+  changePassword: async (data: any): Promise<AuthResponse> => {
+    return authRequest<AuthResponse>("/account/password/change", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
 };

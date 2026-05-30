@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (data: Partial<User>) => Promise<void>;
 }
 
 interface Props {
@@ -85,6 +86,13 @@ export function AuthProvider({ children }: Props) {
     setUserLoggedIn(false);
   };
 
+  const updateUser = async (data: Partial<User>) => {
+    const res = await authApi.updateUser(data);
+    if (res.data?.user) {
+      setCurrentUser(res.data.user);
+    }
+  };
+
   const value = {
     currentUser,
     userLoggedIn,
@@ -96,6 +104,7 @@ export function AuthProvider({ children }: Props) {
     login,
     signup,
     logout,
+    updateUser,
   };
 
   return (

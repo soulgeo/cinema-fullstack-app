@@ -92,13 +92,14 @@ const UserDropdown = () => {
             <UserRound size={18} strokeWidth={3}/>{currentUser?.first_name}
           </div>
           <ul
-            tabIndex={-1}
-            className="menu menu-md dropdown-content bg-base-200 rounded-box w-52 p-2 shadow"
+          tabIndex={-1}
+          className="menu menu-md dropdown-content bg-base-200 rounded-box w-52 p-2 shadow"
           >
-            <li>
-              <Link to="/dashboard">Account</Link>
-            </li>
-            <li>
+          <li>
+            <Link to="/account">Account</Link>
+          </li>
+          <li>
+
               <Link to="/tickets">My Tickets</Link>
             </li>
             <li>

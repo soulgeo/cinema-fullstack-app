@@ -4,6 +4,7 @@ import CustomToast from "./components/ui/CustomToast";
 import HomePage from "./components/pages/HomePage";
 import MoviePage from "./components/pages/MoviePage";
 import BookingPage from "./components/pages/BookingPage";
+import AccountPage from "./components/pages/AccountPage";
 import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/booking",
     element:<BookingPage />,
+  },
+  {
+    path: "/account",
+    element: <AccountPage />,
   }
 ]);
 
