@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.headless',
+    'accounts',
     'screenings',
 ]
 
@@ -86,10 +87,16 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+# Authentication User Model
+AUTH_USER_MODEL = 'accounts.User'
+
 # Allauth Settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_ADAPTER = 'accounts.adapters.UserAdapter'
+HEADLESS_ADAPTER = 'accounts.adapters.HeadlessUserAdapter'
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*']
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 TEMPLATES = [
@@ -129,8 +136,8 @@ else:
             "NAME": env("POSTGRES_DB"),
             "USER": env("POSTGRES_USER"),
             "PASSWORD": env("POSTGRES_PASSWORD"),
-            "HOST": env("DB_HOST", default="db"),
-            "PORT": env("DB_PORT", default=5432),
+            "HOST": env("DB_HOST", default="db"), # type: ignore
+            "PORT": env("DB_PORT", default=5432), # type: ignore
         }
     }
 

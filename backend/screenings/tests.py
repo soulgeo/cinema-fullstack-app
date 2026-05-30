@@ -70,7 +70,13 @@ class ScreeningModelTest(TestCase):
 
 class TicketModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', email='test@test.com', password='password')
+        self.user = User.objects.create_user(
+            email='test@test.com', 
+            password='password',
+            first_name='Test',
+            last_name='User',
+            phone_number='+9999999999'
+        )
         self.movie = Movie.objects.create(
             title="Inception",
             duration=timedelta(hours=2),

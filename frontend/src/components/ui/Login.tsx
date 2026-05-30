@@ -43,35 +43,41 @@ const Login = ({ closeModal, onShowSignup, next }: LoginProps) => {
 
   return (
     <Card>
-      <div className="w-full p-2 text-center font-bold">Log In</div>
+      <div className="w-full p-2 text-center font-bold">Login</div>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <input
-          type="email"
-          className="input input-ghost w-full"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        ></input>
-        <div className="relative w-full">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Email</label>
           <input
-            type={showPassword ? "text" : "password"}
-            className="input input-ghost w-full pr-10"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="email"
+            className="input bg-base-200 w-full focus:outline-none focus:border-primary"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           ></input>
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Password</label>
+          <div className="relative w-full">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input bg-base-200 w-full pr-10 focus:outline-none focus:border-primary"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            ></input>
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </div>
         <button type="submit" className="btn btn-primary mt-2">
-          Log In
+          Log in
         </button>
       </form>
       <div className="mt-4 text-center text-sm text-base-content/60">

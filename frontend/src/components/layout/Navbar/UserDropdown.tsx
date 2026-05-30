@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import profileImageUrl from "../../../assets/profile.svg";
 import Logout from "../../ui/Logout";
 import Login from "../../ui/Login";
 import Signup from "../../ui/Signup";
@@ -90,14 +89,17 @@ const UserDropdown = () => {
       {userLoggedIn ? (
         <div className="dropdown dropdown-end dropdown-hover">
           <div tabIndex={0} role="button" className="btn btn-outline px-3">
-            <UserRound size={18} strokeWidth={3}/>{currentUser?.username}
+            <UserRound size={18} strokeWidth={3}/>{currentUser?.first_name}
           </div>
           <ul
             tabIndex={-1}
             className="menu menu-md dropdown-content bg-base-200 rounded-box w-52 p-2 shadow"
           >
             <li>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard">Account</Link>
+            </li>
+            <li>
+              <Link to="/tickets">My Tickets</Link>
             </li>
             <li>
               <span onClick={openLogoutModal} className="text-error">
@@ -124,7 +126,7 @@ const UserDropdown = () => {
 
       <dialog
         ref={dialogRef}
-        className="m-auto bg-transparent border-none w-sm p-3 overflow-visible"
+        className={`m-auto bg-transparent border-none ${mode === "signup" ? "w-lg" : "w-sm"} p-3 overflow-visible`}
       >
         <div
           className={

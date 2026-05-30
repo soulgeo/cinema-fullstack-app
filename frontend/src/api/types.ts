@@ -1,7 +1,11 @@
 export type User = {
   id: number;
   email: string;
-  username: string;
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  date_of_birth?: string;
+  password?: string;
 };
 
 export type AuthError = {
@@ -26,6 +30,10 @@ export type LoginCredentials = {
 
 export type SignupData = {
   email?: string;
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  date_of_birth?: string;
   password?: string;
 };
 

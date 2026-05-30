@@ -1,5 +1,5 @@
 import random
-from datetime import timedelta
+from datetime import timedelta, date
 from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -20,14 +20,46 @@ class Command(BaseCommand):
         admin_group, _ = Group.objects.get_or_create(name='Admin')
 
         admin_user, created = User.objects.get_or_create(
-            username='admin',
-            defaults={'email': 'admin@cinema.com', 'is_staff': True, 'is_superuser': True}
+            defaults={
+                'email': 'admin@cinema.com',
+                'is_staff': True,
+                'is_superuser': True,
+                'phone_number': '+1234567890',
+                'date_of_birth': date(1990, 1, 1)
+            }
         )
         if created:
             admin_user.set_password('admin123')
             admin_user.save()
             admin_user.groups.add(admin_group)
             self.stdout.write(f'Created admin user: admin')
+
+        # Create some test users
+        test_users = [
+            {
+                'email': 'jdoe@example.com',
+                'first_name': 'John',
+                'last_name': 'Doe',
+                'phone_number': '+1555010101',
+                'date_of_birth': date(1985, 5, 15)
+            },
+            {
+                'email': 'asmith@example.com',
+                'first_name': 'Adam',
+                'last_name': 'Smith',
+                'phone_number': '+1555020202',
+                'date_of_birth': date(1995, 10, 20)
+            }
+        ]
+
+        for u_data in test_users:
+            user, created = User.objects.get_or_create(
+                defaults=u_data
+            )
+            if created:
+                user.set_password('password123')
+                user.save()
+                self.stdout.write(f"Created test user: {user.email}")
 
         # 2. Create 5 Halls
         halls_data = [

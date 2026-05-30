@@ -12,7 +12,7 @@ const BackButton = ({ text }: BackButtonProps) => {
       onClick={() => navigate(-1)}
       className="btn btn-ghost btn-sm w-fit gap-2 pl-0"
     >
-      <ChevronLeft size={16} /> { text ?? "Back"}
+      <ChevronLeft size={16} /> {text ?? "Back"}
     </button>
   )
 }

@@ -23,14 +23,26 @@ class CinemaAPITestCase(APITestCase):
         # Create users - cast Manager to Any for create_user
         mgr: Any = User.objects
         self.audience_user = mgr.create_user(
-            username='audience', email='audience@test.com', password='password'
+            email='audience@test.com', 
+            password='password',
+            first_name='Audience',
+            last_name='User',
+            phone_number='+1111111111'
         )
         self.staff_user = mgr.create_user(
-            username='staff', email='staff@test.com', password='password'
+            email='staff@test.com', 
+            password='password',
+            first_name='Staff',
+            last_name='User',
+            phone_number='+2222222222'
         )
         self.staff_user.groups.add(self.staff_group)
         self.admin_user = mgr.create_user(
-            username='admin', email='admin@test.com', password='password'
+            email='admin@test.com', 
+            password='password',
+            first_name='Admin',
+            last_name='User',
+            phone_number='+3333333333'
         )
         self.admin_user.groups.add(self.admin_group)
 
@@ -160,7 +172,11 @@ class CinemaAPITestCase(APITestCase):
         # Another user and their ticket
         mgr: Any = User.objects
         other_user = mgr.create_user(
-            username='other', email='other@test.com', password='password'
+            email='other@test.com', 
+            password='password',
+            first_name='Other',
+            last_name='User',
+            phone_number='+4444444444'
         )
         other_seat = Seat.objects.create(
             hall=self.hall, row_label="A", seat_number=2, grid_x=1, grid_y=2

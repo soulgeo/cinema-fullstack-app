@@ -14,6 +14,10 @@ interface SignupProps {
 
 const Signup = ({ closeModal, onShowLogin, next }: SignupProps) => {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +33,14 @@ const Signup = ({ closeModal, onShowLogin, next }: SignupProps) => {
       return;
     }
 
-    const signupPromise = signup({ email, password });
+    const signupPromise = signup({
+      email,
+      password,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber,
+      date_of_birth: dateOfBirth,
+    });
 
     toast.promise(signupPromise, {
       loading: "Creating account...",
@@ -50,49 +61,103 @@ const Signup = ({ closeModal, onShowLogin, next }: SignupProps) => {
 
   return (
     <Card>
-      <div className="w-full p-2 text-center font-bold">Sign Up</div>
+      <div className="w- p-2 text-center font-bold">Sign Up</div>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <input
-          type="email"
-          className="input input-ghost w-full"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        ></input>
-        <div className="relative w-full">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Email</label>
           <input
-            type={showPassword ? "text" : "password"}
-            className="input input-ghost w-full pr-10"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="email"
+            className="input bg-base-200 w-full focus:outline-none focus:border-primary"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           ></input>
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
         </div>
-        <div className="relative w-full">
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-1 w-full">
+            <label className="text-xs text-base-content/60 ml-1">First Name</label>
+            <input
+              type="text"
+              className="input bg-base-200 w-full focus:outline-none focus:border-primary"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            ></input>
+          </div>
+          <div className="flex flex-col gap-1 w-full">
+            <label className="text-xs text-base-content/60 ml-1">Last Name</label>
+            <input
+              type="text"
+              className="input bg-base-200 w-full focus:outline-none focus:border-primary"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            ></input>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Phone Number</label>
           <input
-            type={showConfirmPassword ? "text" : "password"}
-            className="input input-ghost w-full pr-10"
-            placeholder="Confirm Password"
-            value={password2}
-            onChange={(e) => setPassword2(e.target.value)}
+            type="tel"
+            className="input bg-base-200 w-full focus:outline-none focus:border-primary"
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             required
           ></input>
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Date of Birth</label>
+          <input
+            type="date"
+            className="input bg-base-200 w-full focus:outline-none focus:border-primary"
+            value={dateOfBirth}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            required
+          ></input>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Password</label>
+          <div className="relative w-full">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input bg-base-200 w-full pr-10 focus:outline-none focus:border-primary"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            ></input>
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-base-content/60 ml-1">Confirm Password</label>
+          <div className="relative w-full">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              className="input bg-base-200 w-full pr-10 focus:outline-none focus:border-primary"
+              placeholder="Confirm Password"
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+              required
+            ></input>
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </div>
         <button type="submit" className="btn btn-primary mt-2">
           Sign Up
