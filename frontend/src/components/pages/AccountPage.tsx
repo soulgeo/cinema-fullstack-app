@@ -48,14 +48,15 @@ const AccountPage = () => {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
   };
 
-  const onUpdateDetails = async (e: React.FormEvent) => {
+  const onUpdateDetails = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setIsUpdatingDetails(true);
     try {
       await updateUser(details);
       toast.success("Profile updated successfully");
-    } catch (err: any) {
-      const message = err?.errors?.[0]?.message || "An error occurred while updating profile";
+    } catch (err) {
+      const apiError = err as { errors?: { message: string }[] };
+      const message = apiError?.errors?.[0]?.message || "An error occurred while updating profile";
       toast.error(message);
       console.error(err);
     } finally {
@@ -63,7 +64,7 @@ const AccountPage = () => {
     }
   };
 
-  const onUpdatePassword = async (e: React.FormEvent) => {
+  const onUpdatePassword = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (passwordData.new_password !== passwordData.confirm_password) {
       toast.error("Passwords do not match");
@@ -85,8 +86,9 @@ const AccountPage = () => {
       } else {
         toast.error("Failed to change password");
       }
-    } catch (err: any) {
-      const message = err?.errors?.[0]?.message || "An error occurred while changing password";
+    } catch (err) {
+      const apiError = err as { errors?: { message: string }[] };
+      const message = apiError?.errors?.[0]?.message || "An error occurred while changing password";
       toast.error(message);
       console.error(err);
     } finally {
