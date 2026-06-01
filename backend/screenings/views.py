@@ -1,12 +1,15 @@
 from typing import Any
 
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from screenings.models import Hall, Movie, Screening, Seat, Ticket
 from screenings.permissions import IsAdminUser, IsStaffUser
 from screenings.serializers import (
     HallSerializer,
     MovieSerializer,
+    RichTicketSerializer,
     ScreeningSerializer,
     SeatSerializer,
     TicketSerializer,
@@ -82,7 +85,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'list', 'retrieve']:
+        if self.action in ['create', 'list', 'retrieve', 'my_tickets']:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [IsStaffUser]
@@ -115,3 +118,9 @@ class TicketViewSet(viewsets.ModelViewSet):
             serializer.save()
         else:
             serializer.save(client=user)
+
+    @action(detail=False, methods=['get'])
+    def my_tickets(self, request):
+        queryset = self.get_queryset()
+        serializer = RichTicketSerializer(queryset, many=True)
+        return Response(serializer.data)

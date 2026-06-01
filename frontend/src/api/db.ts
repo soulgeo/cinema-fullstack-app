@@ -76,6 +76,7 @@ export const dbApi = {
 
   tickets: {
     list: () => dbRequest<Ticket[]>("/tickets/"),
+    myTickets: () => dbRequest<import("./types").RichTicket[]>("/tickets/my_tickets/"),
     listByScreening: (screeningId: number) => dbRequest<Ticket[]>(`/tickets/?screening=${screeningId}`),
     get: (id: number) => dbRequest<Ticket>(`/tickets/${id}/`),
     create: (data: Partial<Ticket>) => dbRequest<Ticket>("/tickets/", {

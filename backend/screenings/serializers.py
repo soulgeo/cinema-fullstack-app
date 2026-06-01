@@ -17,7 +17,7 @@ class HallSerializer(serializers.ModelSerializer):
 
 class ScreeningSerializer(serializers.ModelSerializer):
     movie_title = serializers.CharField(source='movie.title', read_only=True)
-    hall = HallSerializer();
+    hall = HallSerializer()
 
     class Meta:
         model = Screening
@@ -36,3 +36,22 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('price_paid', 'created_at')
         extra_kwargs = {'client': {'required': False}}
+
+
+class RichScreeningSerializer(serializers.ModelSerializer):
+    movie = MovieSerializer(read_only=True)
+    hall = HallSerializer(read_only=True)
+
+    class Meta:
+        model = Screening
+        fields = '__all__'
+
+
+class RichTicketSerializer(serializers.ModelSerializer):
+    seat = SeatSerializer(read_only=True)
+    screening = RichScreeningSerializer(read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = '__all__'
+

@@ -68,10 +68,7 @@ export type Screening = {
   base_price: string;
 };
 
-export enum SeatType {
-  REGULAR = 'REGULAR',
-  VIP = 'VIP',
-}
+export type SeatType = 'REGULAR' | 'VIP';
 
 export type Seat = {
   id: number;
@@ -83,11 +80,7 @@ export type Seat = {
   seat_type: SeatType;
 };
 
-export enum TicketStatus {
-  RESERVED = 'RESERVED',
-  PAID = 'PAID',
-  CANCELLED = 'CANCELLED',
-}
+export type TicketStatus = 'RESERVED' | 'PAID' | 'CANCELLED';
 
 export type Ticket = {
   id: number;
@@ -97,4 +90,14 @@ export type Ticket = {
   status: TicketStatus;
   price_paid?: string;
   created_at: string;
+};
+
+export type RichScreening = Omit<Screening, 'movie' | 'hall'> & {
+  movie: Movie;
+  hall: Hall;
+};
+
+export type RichTicket = Omit<Ticket, 'seat' | 'screening'> & {
+  seat: Seat;
+  screening: RichScreening;
 };

@@ -108,7 +108,7 @@ const AccountPage = () => {
 
   return (
     <Layout>
-      <div className="w-full max-w-4xl py-8 flex flex-col gap-8 mx-auto">
+      <div className="w-full py-4 flex flex-col gap-4 mx-auto">
         <div className="flex flex-col gap-2">
           <BackButton text="Back" />
           <h1 className="text-3xl font-bold">My Account</h1>
