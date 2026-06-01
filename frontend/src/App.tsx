@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, RouterProvider, redirect } from "react-router";
 import { resolveValue, Toaster } from "react-hot-toast";
 import CustomToast from "./components/ui/CustomToast";
 import HomePage from "./components/pages/HomePage";
@@ -6,6 +6,16 @@ import MoviePage from "./components/pages/MoviePage";
 import BookingPage from "./components/pages/BookingPage";
 import AccountPage from "./components/pages/AccountPage";
 import { AuthProvider } from "./context/AuthContext";
+import TicketsPage from "./components/pages/TicketsPage";
+import { authApi } from "./api/auth";
+
+const requireAuthLoader = async () => {
+  const { user } = await authApi.getSession();
+  if (!user) {
+    return redirect("/");
+  }
+  return null;
+};
 
 const router = createBrowserRouter([
   {
@@ -23,6 +33,12 @@ const router = createBrowserRouter([
   {
     path: "/account",
     element: <AccountPage />,
+    loader: requireAuthLoader,
+  },
+  {
+    path: "/tickets",
+    element: <TicketsPage />,
+    loader: requireAuthLoader,
   }
 ]);
 
