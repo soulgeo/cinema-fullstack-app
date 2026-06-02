@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from .models import Movie, Hall, Screening, Seat, Ticket
+from .hashing import generate_secret_salt_and_hash
 
 User = get_user_model()
 
@@ -99,18 +100,24 @@ class TicketModelTest(TestCase):
         )
 
     def test_ticket_price_calculation_regular(self):
+        _, salt, hash = generate_secret_salt_and_hash()
         ticket = Ticket.objects.create(
             client=self.user,
             screening=self.screening,
-            seat=self.regular_seat
+            seat=self.regular_seat,
+            salt=salt,
+            secret_hash=hash
         )
         self.assertEqual(ticket.price_paid, Decimal('10.00'))
 
     def test_ticket_price_calculation_vip(self):
+        _, salt, hash = generate_secret_salt_and_hash()
         ticket = Ticket.objects.create(
             client=self.user,
             screening=self.screening,
-            seat=self.vip_seat
+            seat=self.vip_seat,
+            salt=salt,
+            secret_hash=hash
         )
         # 10.00 * 1.5 = 15.00
         self.assertEqual(ticket.price_paid, Decimal('15.00'))

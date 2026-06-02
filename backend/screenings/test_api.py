@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import Hall, Movie, Screening, Seat, Ticket
+from .hashing import generate_secret_salt_and_hash
 
 User = get_user_model()
 
@@ -100,8 +101,13 @@ class CinemaAPITestCase(APITestCase):
 
     def test_staff_can_view_all_tickets(self):
         # Create a ticket for audience
+        _, salt, hash = generate_secret_salt_and_hash()
         Ticket.objects.create(
-            client=self.audience_user, screening=self.screening, seat=self.seat
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash
         )
 
         cl: Any = self.client
@@ -112,8 +118,13 @@ class CinemaAPITestCase(APITestCase):
         self.assertEqual(len(response.data), 1)
 
     def test_staff_can_validate_ticket(self):
+        _, salt, hash = generate_secret_salt_and_hash()
         ticket: Any = Ticket.objects.create(
-            client=self.audience_user, screening=self.screening, seat=self.seat
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash
         )
         cl: Any = self.client
         cl.force_authenticate(user=self.staff_user)
@@ -165,8 +176,13 @@ class CinemaAPITestCase(APITestCase):
 
     def test_audience_sees_only_own_tickets(self):
         # Ticket for audience
+        _, salt, hash = generate_secret_salt_and_hash()
         Ticket.objects.create(
-            client=self.audience_user, screening=self.screening, seat=self.seat
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash
         )
 
         # Another user and their ticket
@@ -181,8 +197,13 @@ class CinemaAPITestCase(APITestCase):
         other_seat = Seat.objects.create(
             hall=self.hall, row_label="A", seat_number=2, grid_x=1, grid_y=2
         )
+        _, salt, hash = generate_secret_salt_and_hash()
         Ticket.objects.create(
-            client=other_user, screening=self.screening, seat=other_seat
+            client=other_user,
+            screening=self.screening,
+            seat=other_seat,
+            salt=salt,
+            secret_hash=hash
         )
 
         cl: Any = self.client

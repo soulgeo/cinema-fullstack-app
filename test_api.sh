@@ -7,9 +7,9 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Credentials
-AUDIENCE="audience:password123"
-STAFF="staff:password123"
-ADMIN="admin:password123"
+AUDIENCE="audience@test.com:password123"
+STAFF="staff@test.com:password123"
+ADMIN="admin@test.com:password123"
 
 # Track created IDs for cleanup
 CREATED_MOVIE_ID=""
@@ -41,7 +41,7 @@ cleanup() {
     CLEANUP_USERS="
 from django.contrib.auth import get_user_model
 User = get_user_model()
-User.objects.filter(username__in=['audience', 'staff', 'admin']).delete()
+User.objects.filter(email__in=['audience@test.com', 'staff@test.com', 'admin@test.com']).delete()
 "
     if command -v docker-compose &> /dev/null && docker-compose ps | grep -q "Up"; then
         echo "$CLEANUP_USERS" | docker-compose exec -T backend uv run python manage.py shell > /dev/null 2>&1
@@ -63,8 +63,15 @@ User = get_user_model()
 staff_group, _ = Group.objects.get_or_create(name='Staff')
 admin_group, _ = Group.objects.get_or_create(name='Admin')
 
-def create_user(username, email, group_name=None):
-    user, created = User.objects.get_or_create(username=username, defaults={'email': email})
+def create_user(email, first_name, group_name=None):
+    user, created = User.objects.get_or_create(
+        email=email, 
+        defaults={
+            'first_name': first_name,
+            'last_name': 'Tester',
+            'phone_number': '+1234567890'
+        }
+    )
     user.set_password('password123')
     user.save()
     if group_name:
@@ -72,9 +79,9 @@ def create_user(username, email, group_name=None):
         user.groups.add(group)
     return user
 
-create_user('audience', 'audience@test.com')
-create_user('staff', 'staff@test.com', 'Staff')
-create_user('admin', 'admin@test.com', 'Admin')
+create_user('audience@test.com', 'Audience')
+create_user('staff@test.com', 'Staff', 'Staff')
+create_user('admin@test.com', 'Admin', 'Admin')
 "
 
 if command -v docker-compose &> /dev/null && docker-compose ps | grep -q "Up"; then
@@ -129,9 +136,9 @@ SCREENING_ID=$(http --ignore-stdin -a $ADMIN POST "$API_BASE/screenings/" movie=
 SEAT_ID=$(http --ignore-stdin -a $ADMIN POST "$API_BASE/seats/" hall=$CREATED_HALL_ID row_label="T" seat_number=99 grid_x=1 grid_y=1 | grep -Po '"id":\s*\K\d+' | head -1)
 
 # Get Audience User ID
-AUD_ID=$(cd backend && docker-compose exec -T backend uv run python manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.get(username='audience').id)" 2>/dev/null | grep -Po '\d+' | tail -1)
+AUD_ID=$(docker-compose exec -T backend uv run python manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.get(email='audience@test.com').id)" 2>/dev/null | grep -Po '\d+' | tail -1)
 
-if [ ! -z "$SCREENING_ID" ] && [ ! -z "$SEAT_ID" ]; then
+if [ ! -z "$SCREENING_ID" ] && [ ! -z "$SEAT_ID" ] && [ ! -z "$AUD_ID" ]; then
     echo "Staff creating ticket for Audience member..."
     TICKET_RESP=$(http --ignore-stdin -a $STAFF POST "$API_BASE/tickets/" screening=$SCREENING_ID seat=$SEAT_ID client=$AUD_ID)
     CREATED_TICKET_ID=$(echo "$TICKET_RESP" | grep -Po '"id":\s*\K\d+' | head -1)
@@ -143,6 +150,10 @@ if [ ! -z "$SCREENING_ID" ] && [ ! -z "$SEAT_ID" ]; then
         echo "$TICKET_RESP"
         exit 1
     fi
+else
+    echo -e "${RED}❌ Failed to set up cross-role flow IDs${NC}"
+    echo "Screening: $SCREENING_ID, Seat: $SEAT_ID, Audience: $AUD_ID"
+    exit 1
 fi
 
 echo -e "\n${GREEN}All tests passed successfully!${NC}"
