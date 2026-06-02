@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from screenings.hashing import SALT_LEN
+
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
@@ -101,6 +103,8 @@ class Seat(models.Model):
 
 
 class Ticket(models.Model):
+    secret_hash = models.CharField(max_length=128)
+    salt = models.CharField(max_length=SALT_LEN)
     client = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="tickets",

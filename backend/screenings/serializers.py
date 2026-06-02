@@ -17,11 +17,15 @@ class HallSerializer(serializers.ModelSerializer):
 
 class ScreeningSerializer(serializers.ModelSerializer):
     movie_title = serializers.CharField(source='movie.title', read_only=True)
-    hall = HallSerializer()
 
     class Meta:
         model = Screening
         fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['hall'] = HallSerializer(instance.hall).data
+        return representation
 
 
 class SeatSerializer(serializers.ModelSerializer):
@@ -30,12 +34,24 @@ class SeatSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TicketSerializer(serializers.ModelSerializer):
+class TicketCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = '__all__'
+        read_only_fields = ('price_paid', 'created_at', 'secret_hash', 'salt')
+        extra_kwargs = {
+            'client': {'required': False},
+        }
+
+
+class TicketDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ['id', 'client', 'screening', 'seat', 'status', 'price_paid', 'created_at']
         read_only_fields = ('price_paid', 'created_at')
-        extra_kwargs = {'client': {'required': False}}
+        extra_kwargs = {
+            'client': {'required': False},
+        }
 
 
 class RichScreeningSerializer(serializers.ModelSerializer):

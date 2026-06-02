@@ -1,18 +1,26 @@
+import io
+from email.mime.image import MIMEImage
 from typing import Any
 
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from screenings.hashing import generate_secret_salt_and_hash
 from screenings.models import Hall, Movie, Screening, Seat, Ticket
 from screenings.permissions import IsAdminUser, IsStaffUser
+from screenings.qr import qr_encode
 from screenings.serializers import (
     HallSerializer,
     MovieSerializer,
     RichTicketSerializer,
     ScreeningSerializer,
     SeatSerializer,
-    TicketSerializer,
+    TicketCreateSerializer,
+    TicketDetailSerializer,
 )
 
 
@@ -82,7 +90,11 @@ class SeatViewSet(viewsets.ModelViewSet):
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
-    serializer_class = TicketSerializer
+
+    def get_serializer_class(self):  # type: ignore[override]
+        if self.action in ['create', 'update', 'partial_update']:
+            return TicketCreateSerializer
+        return TicketDetailSerializer
 
     def get_permissions(self):
         if self.action in ['create', 'list', 'retrieve', 'my_tickets']:
@@ -103,11 +115,13 @@ class TicketViewSet(viewsets.ModelViewSet):
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
             return Ticket.objects.all()
-        if (screening_id):
+        if screening_id:
             return Ticket.objects.filter(screening_id=screening_id)
         return Ticket.objects.filter(client=user)
 
     def perform_create(self, serializer):
+        secret, salt, hash = generate_secret_salt_and_hash()
+
         user: Any = self.request.user
         is_staff_or_admin = (
             user.is_superuser
@@ -115,9 +129,36 @@ class TicketViewSet(viewsets.ModelViewSet):
         )
         request: Any = self.request
         if is_staff_or_admin and 'client' in request.data:
-            serializer.save()
+            instance = serializer.save(secret_hash=hash, salt=salt)
         else:
-            serializer.save(client=user)
+            instance = serializer.save(secret_hash=hash, salt=salt, client=user)
+
+        email_user = instance.client
+        data = {
+            'id': instance.pk,
+            'secret': secret,
+        }
+        qr_img = qr_encode(data)
+
+        buffer = io.BytesIO()
+        qr_img.save(buffer, kind='PNG')
+        buffer.seek(0)
+        image_data = buffer.read()
+
+        html_content = render_to_string(
+            'ticket_mail.html', {'first_name': email_user.first_name}
+        )
+        text_content = strip_tags(html_content)
+
+        msg = EmailMultiAlternatives(
+            "Secret", text_content, "from@example.com", [email_user.email]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        mime_image = MIMEImage(image_data)
+        mime_image.add_header('Content-ID', '<my_dynamic_image>')
+        msg.attach(mime_image)
+
+        msg.send()
 
     @action(detail=False, methods=['get'])
     def my_tickets(self, request):
