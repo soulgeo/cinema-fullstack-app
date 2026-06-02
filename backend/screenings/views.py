@@ -5,7 +5,7 @@ from typing import Any
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -97,7 +97,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         return TicketDetailSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'list', 'retrieve', 'my_tickets']:
+        if self.action in ['create', 'list', 'retrieve', 'my_tickets', 're_issue']:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [IsStaffUser]
@@ -120,7 +120,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         return Ticket.objects.filter(client=user)
 
     def perform_create(self, serializer):
-        secret, salt, hash = generate_secret_salt_and_hash()
+        secret, salt, s_hash = generate_secret_salt_and_hash()
 
         user: Any = self.request.user
         is_staff_or_admin = (
@@ -129,10 +129,13 @@ class TicketViewSet(viewsets.ModelViewSet):
         )
         request: Any = self.request
         if is_staff_or_admin and 'client' in request.data:
-            instance = serializer.save(secret_hash=hash, salt=salt)
+            instance = serializer.save(secret_hash=s_hash, salt=salt)
         else:
-            instance = serializer.save(secret_hash=hash, salt=salt, client=user)
+            instance = serializer.save(secret_hash=s_hash, salt=salt, client=user)
 
+        self._send_ticket_email(instance, secret)
+
+    def _send_ticket_email(self, instance, secret):
         email_user = instance.client
         data = {
             'id': instance.pk,
@@ -155,7 +158,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         )
         msg.attach_alternative(html_content, "text/html")
         mime_image = MIMEImage(image_data)
-        mime_image.add_header('Content-ID', '<my_dynamic_image>')
+        mime_image.add_header('Content-ID', '<ticket_qr>')
         msg.attach(mime_image)
 
         msg.send()
@@ -165,3 +168,16 @@ class TicketViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         serializer = RichTicketSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'])
+    def re_issue(self, request, pk=None):
+        instance = self.get_object()
+        secret, salt, s_hash = generate_secret_salt_and_hash()
+
+        instance.salt = salt
+        instance.secret_hash = s_hash
+        instance.save()
+
+        self._send_ticket_email(instance, secret)
+
+        return Response({"status": "ticket re-issued"}, status=status.HTTP_200_OK)

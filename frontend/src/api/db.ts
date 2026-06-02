@@ -87,6 +87,9 @@ export const dbApi = {
       method: "PATCH", // Use PATCH for staff to update status
       body: JSON.stringify(data),
     }),
+    reissue: (id: number) => dbRequest<void>(`/tickets/${id}/re_issue/`, {
+      method: "PATCH",
+    }),
     delete: (id: number) => dbRequest<void>(`/tickets/${id}/`, {
       method: "DELETE",
     }),

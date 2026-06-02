@@ -214,3 +214,25 @@ class CinemaAPITestCase(APITestCase):
         self.assertEqual(len(response.data), 1)
         u: Any = self.audience_user
         self.assertEqual(response.data[0]['client'], u.id)
+
+    def test_staff_can_re_issue_ticket(self):
+        _, salt, hash = generate_secret_salt_and_hash()
+        ticket: Any = Ticket.objects.create(
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash
+        )
+        old_hash = ticket.secret_hash
+        old_salt = ticket.salt
+
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('ticket-re-issue', args=[ticket.id])
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        ticket.refresh_from_db()
+        self.assertNotEqual(ticket.secret_hash, old_hash)
+        self.assertNotEqual(ticket.salt, old_salt)

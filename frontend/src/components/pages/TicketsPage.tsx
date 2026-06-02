@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { dbApi } from "../../api/db";
 import type { RichTicket } from "../../api/types";
@@ -6,10 +6,14 @@ import Layout from "../layout/Layout";
 import Loading from "../ui/Loading";
 import { toast } from "react-hot-toast";
 import BackButton from "../ui/BackButton";
+import { ChevronDown, RefreshCw, X } from "lucide-react";
+import Card from "../ui/Card";
 
 const TicketsPage = () => {
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState<RichTicket[]>([]);
+  const [reissueTickets, setReissueTickets] = useState<RichTicket[]>([]);
+  const reissueDialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +59,35 @@ const TicketsPage = () => {
   upcomingScreenings.sort((a, b) => new Date(a[1][0].screening.start_time).getTime() - new Date(b[1][0].screening.start_time).getTime());
   pastScreenings.sort((a, b) => new Date(b[1][0].screening.start_time).getTime() - new Date(a[1][0].screening.start_time).getTime());
 
+  const openReissueModal = (ticketsToReissue: RichTicket[]) => {
+    setReissueTickets(ticketsToReissue);
+    reissueDialogRef.current?.showModal();
+  };
+
+  const closeReissueModal = () => {
+    reissueDialogRef.current?.close();
+    setReissueTickets([]);
+  };
+
+  const confirmReissue = async () => {
+    if (reissueTickets.length === 0) return;
+    
+    const reissuePromises = reissueTickets.map(t => dbApi.tickets.reissue(t.id));
+    
+    toast.promise(Promise.all(reissuePromises), {
+      loading: reissueTickets.length > 1 ? `Reissuing ${reissueTickets.length} tickets...` : "Reissuing ticket...",
+      success: reissueTickets.length > 1 ? "Tickets reissued! Check your email." : "Ticket reissued! Check your email.",
+      error: reissueTickets.length > 1 ? "Failed to reissue tickets." : "Failed to reissue ticket.",
+    });
+
+    try {
+      await Promise.all(reissuePromises);
+      closeReissueModal();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const renderScreening = ([screeningId, screeningTickets]: [string, RichTicket[]]) => {
     const screening = screeningTickets[0].screening;
     const movie = screening.movie;
@@ -86,19 +119,54 @@ const TicketsPage = () => {
 
           {/* Tickets/Seats */}
           <div className="mt-auto">
-            <h3 className="font-bold mb-3 opacity-90 text-sm uppercase tracking-wide">
-              Booked Seats ({screeningTickets.length})
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <h3 className="font-bold opacity-90 text-sm uppercase tracking-wide">
+                Booked Seats ({screeningTickets.length})
+              </h3>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => openReissueModal(screeningTickets)}
+                  className="btn btn-xs btn-outline gap-1"
+                >
+                  <RefreshCw size={12} />
+                  Reissue All
+                </button>
+                <button 
+                  className="btn btn-xs btn-outline btn-error gap-1"
+                >
+                  <X size={12} />
+                  Cancel All
+                </button>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {screeningTickets.map(ticket => {
                 const seat = ticket.seat;
                 const isVIP = seat.seat_type === 'VIP';
                 return (
-                  <div 
-                    key={ticket.id} 
-                    className={`badge badge-lg py-4 px-4 font-semibold shadow-sm ${isVIP ? 'badge-warning' : 'badge-primary'}`}
-                  >
-                    Row {seat.row_label}, Seat {seat.seat_number} {isVIP && ' (VIP)'}
+                  <div key={ticket.id} className="dropdown dropdown-bottom dropdown-end">
+                    <div 
+                      tabIndex={0} 
+                      role="button" 
+                      className={`badge badge-lg py-4 pl-4 pr-3 font-semibold shadow-sm flex items-center gap-1 transition-colors hover:opacity-90 cursor-pointer ${isVIP ? 'badge-neutral' : 'badge-accent'}`}
+                    >
+                      {seat.row_label}{seat.seat_number} {isVIP && ' (VIP)'}
+                      <ChevronDown size={14} className="opacity-70 ml-1" strokeWidth={2.5} />
+                    </div>
+                    <ul tabIndex={0} className="dropdown-content z-1 menu p-2 shadow bg-base-200 rounded-box w-52 mt-1">
+                      <li>
+                        <button onClick={() => openReissueModal([ticket])} className="flex items-center gap-2">
+                          <RefreshCw size={16} />
+                          Reissue Ticket
+                        </button>
+                      </li>
+                      <li>
+                        <button className="flex items-center gap-2 text-error">
+                          <X size={16} />
+                          Cancel Ticket
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                 );
               })}
@@ -125,26 +193,54 @@ const TicketsPage = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <details className="collapse collapse-arrow bg-base-200" open={upcomingScreenings.length > 0}>
+            <details className="collapse collapse-arrow bg-base-200 !overflow-visible relative focus-within:z-50" open={upcomingScreenings.length > 0}>
               <summary className="collapse-title text-md font-light">
                 Upcoming ({upcomingScreenings.length})
               </summary>
-              <div className="collapse-content flex flex-col gap-6 pt-4">
+              <div className="collapse-content flex flex-col gap-6 pt-4 !overflow-visible">
                 {upcomingScreenings.length > 0 ? upcomingScreenings.map(renderScreening) : <p className="opacity-70 italic py-4">No upcoming screenings.</p>}
               </div>
             </details>
 
-            <details className="collapse collapse-arrow bg-base-200" open={upcomingScreenings.length === 0 && pastScreenings.length > 0}>
+            <details className="collapse collapse-arrow bg-base-200 !overflow-visible relative focus-within:z-50" open={upcomingScreenings.length === 0 && pastScreenings.length > 0}>
               <summary className="collapse-title text-md font-light">
                 Past Screenings ({pastScreenings.length})
               </summary>
-              <div className="collapse-content flex flex-col gap-6 pt-4">
+              <div className="collapse-content flex flex-col gap-6 pt-4 !overflow-visible">
                 {pastScreenings.length > 0 ? pastScreenings.map(renderScreening) : <p className="opacity-70 italic py-4">No past screenings.</p>}
               </div>
             </details>
           </div>
         )}
       </div>
+
+      <dialog 
+        ref={reissueDialogRef} 
+        onClose={closeReissueModal}
+        className="m-auto bg-transparent border-none w-sm p-3 overflow-visible"
+      >
+        <div className="animate-subtle-zoom-fade">
+          <button
+            onClick={closeReissueModal}
+            className="btn btn-ghost btn-circle absolute top-3 right-3 z-50"
+          >
+            ✕
+          </button>
+          <Card>
+            <div className="w-full p-2 text-center font-bold">
+              {reissueTickets.length > 1 ? `Reissue ${reissueTickets.length} Tickets?` : "Reissue Ticket?"}
+            </div>
+            <p className="text-center text-sm opacity-70">
+              {reissueTickets.length > 1 
+                ? "New tickets will be sent to your email. All old ones will become invalid." 
+                : "A new ticket will be sent to your email. The old one will become invalid."}
+            </p>
+            <button className="btn btn-primary mt-2 w-full" onClick={confirmReissue}>
+              Confirm Reissue
+            </button>
+          </Card>
+        </div>
+      </dialog>
     </Layout>
   );
 };
