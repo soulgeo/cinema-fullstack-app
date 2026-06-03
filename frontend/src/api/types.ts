@@ -6,6 +6,8 @@ export type User = {
   phone_number?: string;
   date_of_birth?: string;
   password?: string;
+  is_staff: boolean;
+  is_admin: boolean;
 };
 
 export type AuthError = {
@@ -62,6 +64,7 @@ export type Screening = {
   id: number;
   movie: number;
   movie_title?: string;
+  tickets_count?: number;
   hall: Hall;
   hall_name?: string;
   start_time: string;

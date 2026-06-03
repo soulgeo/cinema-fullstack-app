@@ -8,6 +8,7 @@ import AccountPage from "./components/pages/AccountPage";
 import { AuthProvider } from "./context/AuthContext";
 import TicketsPage from "./components/pages/TicketsPage";
 import { authApi } from "./api/auth";
+import StaffDashboard from "./components/pages/StaffDashboard";
 
 const requireAuthLoader = async () => {
   const { user } = await authApi.getSession();
@@ -16,6 +17,14 @@ const requireAuthLoader = async () => {
   }
   return null;
 };
+
+const requireStaffLoader = async () => {
+  const { user } = await authApi.getSession();
+  if (!user?.is_staff) {
+    return redirect("/");
+  }
+  return null;
+}
 
 const router = createBrowserRouter([
   {
@@ -39,6 +48,11 @@ const router = createBrowserRouter([
     path: "/tickets",
     element: <TicketsPage />,
     loader: requireAuthLoader,
+  },
+  {
+    path: "/staff",
+    element: <StaffDashboard />,
+    loader: requireStaffLoader,
   }
 ]);
 

@@ -1,15 +1,15 @@
+import { Link } from "react-router";
 import { useAuth } from "../../../context/AuthContext";
 
 const Navigation = () => {
-  const { userLoggedIn } = useAuth();
+  const { currentUser } = useAuth();
 
   return (
-    <>
-      {userLoggedIn && (
-        <div className="flex flex-row gap-2">
-        </div>
-      )}
-    </>
+      <div className="flex flex-row gap-2">
+        { currentUser?.is_staff && (
+          <Link to="/staff" className="btn btn-ghost">Staff Dashboard</Link>
+        )}
+      </div>
   );
 };
 

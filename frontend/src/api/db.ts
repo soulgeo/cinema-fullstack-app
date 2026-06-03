@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { Movie, Hall, Screening, Seat, Ticket } from "./types";
+import type { Movie, Hall, Screening, Seat, Ticket, RichScreening } from "./types";
 
 const DB_BASE = "http://localhost:8000/api";
 
@@ -44,6 +44,7 @@ export const dbApi = {
       const path = movieId ? `/screenings/?movie=${movieId}` : "/screenings/";
       return dbRequest<Screening[]>(path);
     },
+    showingToday: () => dbRequest<Screening[]>("/screenings/showing_today"),
     get: (id: number) => dbRequest<Screening>(`/screenings/${id}/`),
     create: (data: Partial<Screening>) => dbRequest<Screening>("/screenings/", {
       method: "POST",

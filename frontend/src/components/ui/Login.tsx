@@ -1,6 +1,6 @@
 import Card from "../ui/Card";
 import { useState } from "react";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { getAuthErrorMessage } from "../../api/authErrors";
 import { Eye, EyeOff } from "lucide-react";
@@ -16,8 +16,8 @@ const Login = ({ closeModal, onShowSignup, /*next*/ }: LoginProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // const navigate = useNavigate();
-  const { login } = useAuth();
+  const navigate = useNavigate();
+  const { login, currentUser } = useAuth();
 
   const onSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -34,6 +34,9 @@ const Login = ({ closeModal, onShowSignup, /*next*/ }: LoginProps) => {
       await loginPromise;
       if (closeModal) {
         closeModal();
+      }
+      if (currentUser?.is_staff) {
+        navigate("/staff")
       }
       // navigate(next ?? "/");
     } catch {

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
+    class Meta: # type: ignore[override]
         model = User
         fields = ['first_name', 'last_name', 'phone_number', 'date_of_birth']
         extra_kwargs = {
@@ -10,7 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def to_internal_value(self, data):
-        # Intercept the data before validation to convert empty date strings to None
         if 'date_of_birth' in data and data['date_of_birth'] == '':
             data = data.copy()
             data['date_of_birth'] = None

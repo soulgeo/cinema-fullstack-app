@@ -1,8 +1,10 @@
 import io
+from datetime import datetime, time, timedelta
 from email.mime.image import MIMEImage
 from typing import Any
 
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import Count
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from rest_framework import permissions, status, viewsets
@@ -49,7 +51,9 @@ class HallViewSet(viewsets.ModelViewSet):
 
 
 class ScreeningViewSet(viewsets.ModelViewSet):
-    queryset = Screening.objects.all()
+    queryset = Screening.objects.all().annotate(
+        tickets_count_annotated=Count('tickets')
+    )
     serializer_class = ScreeningSerializer
 
     def get_permissions(self):
@@ -65,7 +69,22 @@ class ScreeningViewSet(viewsets.ModelViewSet):
         movie_id = request.query_params.get('movie')
         if movie_id is not None:
             queryset = queryset.filter(movie_id=movie_id)
+
+        queryset = queryset.annotate(tickets_count_annotated=Count('tickets'))
         return queryset
+
+    @action(detail=False, methods=['get'])
+    def showing_today(self, request):
+        today = datetime.now().date()
+        tomorrow = today + timedelta(1)
+        today_start = datetime.combine(today, time())
+        today_end = datetime.combine(tomorrow, time())
+        queryset = Screening.objects.filter(
+            start_time__lte=today_end,
+            start_time__gte=today_start,
+        ).annotate(tickets_count_annotated=Count('tickets'))
+        serializer = ScreeningSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class SeatViewSet(viewsets.ModelViewSet):
@@ -97,7 +116,13 @@ class TicketViewSet(viewsets.ModelViewSet):
         return TicketDetailSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'list', 'retrieve', 'my_tickets', 're_issue']:
+        if self.action in [
+            'create',
+            'list',
+            'retrieve',
+            'my_tickets',
+            're_issue',
+        ]:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [IsStaffUser]
@@ -131,7 +156,9 @@ class TicketViewSet(viewsets.ModelViewSet):
         if is_staff_or_admin and 'client' in request.data:
             instance = serializer.save(secret_hash=s_hash, salt=salt)
         else:
-            instance = serializer.save(secret_hash=s_hash, salt=salt, client=user)
+            instance = serializer.save(
+                secret_hash=s_hash, salt=salt, client=user
+            )
 
         self._send_ticket_email(instance, secret)
 
@@ -180,4 +207,6 @@ class TicketViewSet(viewsets.ModelViewSet):
 
         self._send_ticket_email(instance, secret)
 
-        return Response({"status": "ticket re-issued"}, status=status.HTTP_200_OK)
+        return Response(
+            {"status": "ticket re-issued"}, status=status.HTTP_200_OK
+        )

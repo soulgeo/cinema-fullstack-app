@@ -16,6 +16,8 @@ class UserContainer:
     last_name: str
     phone_number: str
     date_of_birth: Optional[str]
+    is_staff: bool
+    is_admin: bool
 
 class UserAdapter(DefaultAccountAdapter):
     def save_user(self, request: HttpRequest, user, form, commit=True):
@@ -44,6 +46,16 @@ class HeadlessUserAdapter(DefaultHeadlessAdapter):
         dob = user.date_of_birth
         if dob and hasattr(dob, 'isoformat'):
             dob = dob.isoformat()
+        
+        is_admin = bool(
+            user.is_superuser or 
+            user.groups.filter(name='Admin').exists()
+        )
+        is_staff = bool(
+            user.is_superuser or 
+            user.groups.filter(name__in=['Staff', 'Admin']).exists()
+        )
+
         return UserContainer(
             id=user.pk,
             email=user.email,
@@ -52,4 +64,6 @@ class HeadlessUserAdapter(DefaultHeadlessAdapter):
             last_name=user.last_name,
             phone_number=user.phone_number,
             date_of_birth=str(dob) if dob else None,
+            is_staff=is_staff,
+            is_admin=is_admin,
         )
