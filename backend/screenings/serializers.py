@@ -17,6 +17,7 @@ class HallSerializer(serializers.ModelSerializer):
 
 class ScreeningSerializer(serializers.ModelSerializer):
     movie_title = serializers.CharField(source='movie.title', read_only=True)
+    movie_duration = serializers.DurationField(source='movie.duration', read_only=True)
     tickets_count = serializers.SerializerMethodField()
 
     class Meta:  # type: ignore[override]

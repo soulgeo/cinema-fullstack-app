@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { Movie, Hall, Screening, Seat, Ticket, RichScreening } from "./types";
+import type { Movie, Hall, Screening, Seat, Ticket } from "./types";
 
 const DB_BASE = "http://localhost:8000/api";
 
