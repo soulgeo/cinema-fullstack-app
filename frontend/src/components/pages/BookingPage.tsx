@@ -70,15 +70,13 @@ const BookingPage = () => {
   const handleConfirm = async () => {
     setIsSubmitting(true);
     try {
-      // Create tickets for each selected seat
-      await Promise.all(
-        selectedSeats.map((seat) =>
-          dbApi.tickets.create({
-            screening: screening.id,
-            seat: seat.id,
-          })
-        )
-      );
+      // Create a single purchase for all selected seats
+      await dbApi.purchases.create({
+        tickets: selectedSeats.map((seat) => ({
+          screening: screening.id,
+          seat: seat.id,
+        })),
+      });
       toast.success("Tickets booked successfully!");
       navigate("/");
     } catch (err) {

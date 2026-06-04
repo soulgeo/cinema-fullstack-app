@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.fields import related
 from django.utils.translation import gettext_lazy as _
 
 from screenings.hashing import SALT_LEN
@@ -102,9 +103,43 @@ class Seat(models.Model):
         return f"{self.hall.name} - {self.row_label}{self.seat_number} ({self.seat_type})"
 
 
+class Purchase(models.Model):
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="purchases",
+        on_delete=models.CASCADE,
+    )
+
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', _('Pending')
+        PAID = 'PAID', _('Paid')
+        CANCELLED = 'CANCELLED', _('Cancelled')
+
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+
+    total_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal('0.00')
+    )
+
+    def __str__(self):
+        return f"Purchase {self.id} by {self.client.email} - {self.status}"
+
+
 class Ticket(models.Model):
     secret_hash = models.CharField(max_length=128)
     salt = models.CharField(max_length=SALT_LEN)
+
+    purchase = models.ForeignKey(
+        Purchase, related_name="tickets", on_delete=models.CASCADE
+    )
     client = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="tickets",
@@ -117,16 +152,8 @@ class Ticket(models.Model):
         Seat, related_name="tickets", on_delete=models.CASCADE
     )
 
-    class Status(models.TextChoices):
-        RESERVED = 'RESERVED', _('Reserved')
-        PAID = 'PAID', _('Paid')
-        CANCELLED = 'CANCELLED', _('Cancelled')
-
-    status = models.CharField(
-        max_length=10,
-        choices=Status.choices,
-        default=Status.RESERVED,
-    )
+    is_used = models.BooleanField(default=False)
+    
     price_paid = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, null=True
     )

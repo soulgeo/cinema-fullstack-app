@@ -24,7 +24,7 @@ const MoviePage = () => {
       try {
         const [movieData, screeningsData] = await Promise.all([
           dbApi.movies.get(parseInt(id)),
-          dbApi.screenings.list(parseInt(id)),
+          dbApi.screenings.list({ movie: parseInt(id) }),
         ]);
         setMovie(movieData);
         setScreenings(screeningsData);

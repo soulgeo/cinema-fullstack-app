@@ -6,7 +6,7 @@ import Layout from "../layout/Layout";
 import Loading from "../ui/Loading";
 import { toast } from "react-hot-toast";
 import BackButton from "../ui/BackButton";
-import { ChevronDown, RefreshCw, X } from "lucide-react";
+import { ChevronDown, RefreshCw } from "lucide-react";
 import Card from "../ui/Card";
 
 const TicketsPage = () => {
@@ -239,7 +239,7 @@ const TicketsPage = () => {
               You haven't purchased any tickets yet. Browse our current movies
               to book your next cinematic experience.
             </p>
-            <Link to="/" className="btn btn-primary btn-lg">
+            <Link to="/search" className="btn btn-primary btn-lg">
               Browse Movies
             </Link>
           </div>

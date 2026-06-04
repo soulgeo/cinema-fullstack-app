@@ -81,16 +81,28 @@ export type Seat = {
   seat_type: SeatType;
 };
 
-export type TicketStatus = 'RESERVED' | 'PAID' | 'CANCELLED';
-
 export type Ticket = {
   id: number;
   client: number;
   screening: number;
   seat: number;
-  status: TicketStatus;
   price_paid?: string;
   created_at: string;
+  is_used: boolean;
+  purchase: number;
+};
+
+export type PurchaseStatus = 'PENDING' | 'PAID' | 'CANCELLED';
+
+export type Purchase = {
+  id: number;
+  client: number;
+  status: PurchaseStatus;
+  created_at: string;
+  paid_at?: string;
+  cancelled_at?: string;
+  total_price: string;
+  tickets: Ticket[];
 };
 
 export type RichScreening = Omit<Screening, 'movie' | 'hall'> & {

@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { Movie, Hall, Screening, Seat, Ticket } from "./types";
+import type { Movie, Hall, Screening, Seat, Ticket, Purchase } from "./types";
 
 const DB_BASE = "http://localhost:8000/api";
 
@@ -105,6 +105,20 @@ export const dbApi = {
     }),
     delete: (id: number) => dbRequest<void>(`/tickets/${id}/`, {
       method: "DELETE",
+    }),
+  },
+
+  purchases: {
+    list: () => dbRequest<Purchase[]>("/purchases/"),
+    get: (id: number) => dbRequest<Purchase>(`/purchases/${id}/`),
+    create: (data: { tickets: { screening: number; seat: number }[] }) => 
+      dbRequest<Purchase>("/purchases/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    update: (id: number, data: Partial<Purchase>) => dbRequest<Purchase>(`/purchases/${id}/`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
     }),
   },
 };

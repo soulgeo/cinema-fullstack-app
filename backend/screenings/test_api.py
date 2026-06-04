@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import Hall, Movie, Screening, Seat, Ticket
+from .models import Hall, Movie, Screening, Seat, Ticket, Purchase
 from .hashing import generate_secret_salt_and_hash
 
 User = get_user_model()
@@ -86,6 +86,32 @@ class CinemaAPITestCase(APITestCase):
         self.assertEqual(Ticket.objects.count(), 1)
         first_ticket: Any = Ticket.objects.first()
         self.assertEqual(first_ticket.client, self.audience_user)
+        self.assertIsNotNone(first_ticket.purchase)
+
+    def test_audience_can_buy_multiple_tickets_in_one_purchase(self):
+        cl: Any = self.client
+        cl.force_authenticate(user=self.audience_user)
+        url = reverse('purchase-list')
+        
+        seat2 = Seat.objects.create(
+            hall=self.hall, row_label="A", seat_number=2, grid_x=1, grid_y=2
+        )
+        
+        data = {
+            'tickets': [
+                {'screening': self.screening.id, 'seat': self.seat.id},
+                {'screening': self.screening.id, 'seat': seat2.id},
+            ]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Purchase.objects.count(), 1)
+        self.assertEqual(Ticket.objects.count(), 2)
+        purchase: Any = Purchase.objects.first()
+        self.assertEqual(purchase.tickets.count(), 2)
+        # Check total price
+        expected_price = self.screening.base_price * 2
+        self.assertEqual(purchase.total_price, expected_price)
 
     def test_audience_cannot_create_movie(self):
         cl: Any = self.client
@@ -102,12 +128,14 @@ class CinemaAPITestCase(APITestCase):
     def test_staff_can_view_all_tickets(self):
         # Create a ticket for audience
         _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(client=self.audience_user)
         Ticket.objects.create(
             client=self.audience_user,
             screening=self.screening,
             seat=self.seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=purchase
         )
 
         cl: Any = self.client
@@ -117,23 +145,25 @@ class CinemaAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
-    def test_staff_can_validate_ticket(self):
+    def test_staff_can_validate_purchase(self):
         _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(client=self.audience_user)
         ticket: Any = Ticket.objects.create(
             client=self.audience_user,
             screening=self.screening,
             seat=self.seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=purchase
         )
         cl: Any = self.client
         cl.force_authenticate(user=self.staff_user)
-        url = reverse('ticket-detail', args=[ticket.id])
+        url = reverse('purchase-detail', args=[purchase.id])
         data = {'status': 'PAID'}
         response = self.client.patch(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        ticket.refresh_from_db()
-        self.assertEqual(ticket.status, 'PAID')
+        purchase.refresh_from_db()
+        self.assertEqual(purchase.status, 'PAID')
 
     def test_staff_can_create_ticket_for_audience(self):
         cl: Any = self.client
@@ -177,12 +207,14 @@ class CinemaAPITestCase(APITestCase):
     def test_audience_sees_only_own_tickets(self):
         # Ticket for audience
         _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(client=self.audience_user)
         Ticket.objects.create(
             client=self.audience_user,
             screening=self.screening,
             seat=self.seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=purchase
         )
 
         # Another user and their ticket
@@ -198,12 +230,14 @@ class CinemaAPITestCase(APITestCase):
             hall=self.hall, row_label="A", seat_number=2, grid_x=1, grid_y=2
         )
         _, salt, hash = generate_secret_salt_and_hash()
+        other_purchase = Purchase.objects.create(client=other_user)
         Ticket.objects.create(
             client=other_user,
             screening=self.screening,
             seat=other_seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=other_purchase
         )
 
         cl: Any = self.client
@@ -217,12 +251,14 @@ class CinemaAPITestCase(APITestCase):
 
     def test_staff_can_re_issue_ticket(self):
         _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(client=self.audience_user)
         ticket: Any = Ticket.objects.create(
             client=self.audience_user,
             screening=self.screening,
             seat=self.seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=purchase
         )
         old_hash = ticket.secret_hash
         old_salt = ticket.salt

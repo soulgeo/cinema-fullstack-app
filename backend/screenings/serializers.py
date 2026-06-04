@@ -1,6 +1,9 @@
+from decimal import Decimal
 from rest_framework import serializers
 
-from screenings.models import Hall, Movie, Screening, Seat, Ticket
+from screenings.hashing import generate_secret_salt_and_hash
+from screenings.models import Hall, Movie, Purchase, Screening, Seat, Ticket
+from screenings.utils import send_ticket_email
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -47,6 +50,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('price_paid', 'created_at', 'secret_hash', 'salt')
         extra_kwargs = {
             'client': {'required': False},
+            'purchase': {'required': False},
         }
 
 
@@ -58,14 +62,60 @@ class TicketDetailSerializer(serializers.ModelSerializer):
             'client',
             'screening',
             'seat',
-            'status',
             'price_paid',
             'created_at',
+            'is_used',
+            'purchase',
         ]
         read_only_fields = ('price_paid', 'created_at')
         extra_kwargs = {
             'client': {'required': False},
         }
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    tickets = TicketDetailSerializer(many=True, read_only=True)
+
+    class Meta:  # type: ignore[override]
+        model = Purchase
+        fields = '__all__'
+        read_only_fields = ('client', 'created_at', 'total_price')
+
+
+class PurchaseCreateSerializer(serializers.ModelSerializer):
+    tickets = TicketCreateSerializer(many=True)
+
+    class Meta:  # type: ignore[override]
+        model = Purchase
+        fields = ['tickets']
+
+    def create(self, validated_data):
+        tickets_data = validated_data.pop('tickets')
+        request = self.context.get('request')
+        user = request.user if request else None
+        
+        purchase = Purchase.objects.create(client=user)
+        total_price = Decimal('0.00')
+        
+        for ticket_data in tickets_data:
+            secret, salt, s_hash = generate_secret_salt_and_hash()
+            # If client is not provided in ticket_data, use the purchase client
+            ticket_client = ticket_data.pop('client', user)
+            
+            ticket = Ticket.objects.create(
+                purchase=purchase,
+                client=ticket_client,
+                secret_hash=s_hash,
+                salt=salt,
+                **ticket_data
+            )
+            total_price += ticket.price_paid
+            
+            send_ticket_email(ticket, secret)
+            
+        purchase.total_price = total_price
+        purchase.save()
+        return purchase
 
 
 class RichScreeningSerializer(serializers.ModelSerializer):

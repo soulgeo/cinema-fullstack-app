@@ -12,12 +12,15 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from screenings.hashing import generate_secret_salt_and_hash
-from screenings.models import Hall, Movie, Screening, Seat, Ticket
+from screenings.models import Hall, Movie, Purchase, Screening, Seat, Ticket
 from screenings.permissions import IsAdminUser, IsStaffUser
 from screenings.qr import qr_encode
+from screenings.utils import send_ticket_email
 from screenings.serializers import (
     HallSerializer,
     MovieSerializer,
+    PurchaseCreateSerializer,
+    PurchaseSerializer,
     RichTicketSerializer,
     ScreeningSerializer,
     SeatSerializer,
@@ -156,6 +159,42 @@ class SeatViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+class PurchaseViewSet(viewsets.ModelViewSet):
+    queryset = Purchase.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PurchaseCreateSerializer
+        return PurchaseSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'list', 'retrieve']:
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [IsStaffUser]
+        return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        user: Any = self.request.user
+        if (
+            user.is_superuser
+            or user.groups.filter(name__in=['Staff', 'Admin']).exists()
+        ):
+            return Purchase.objects.all()
+        return Purchase.objects.filter(client=user)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        # After creating the purchase and its tickets, we might want to send emails.
+        # But wait, the tickets are created inside the serializer's create() method.
+        # We can loop through them here.
+        # However, TicketViewSet has the _send_ticket_email method.
+        # I'll move _send_ticket_email to a more accessible place if needed, 
+        # but for now I'll just re-implement or call it if I can.
+        # Actually, let's keep it simple: the purchase creation will trigger emails.
+        pass
+
+
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
 
@@ -197,47 +236,34 @@ class TicketViewSet(viewsets.ModelViewSet):
         secret, salt, s_hash = generate_secret_salt_and_hash()
 
         user: Any = self.request.user
+        request: Any = self.request
+        
+        # Ensure a purchase exists
+        purchase = serializer.validated_data.get('purchase')
+        if not purchase:
+            purchase = Purchase.objects.create(client=user)
+            # We will update the total_price later or in a signal, 
+            # but for now let's just use the ticket price.
+        
         is_staff_or_admin = (
             user.is_superuser
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         )
-        request: Any = self.request
+        
         if is_staff_or_admin and 'client' in request.data:
-            instance = serializer.save(secret_hash=s_hash, salt=salt)
+            instance = serializer.save(
+                secret_hash=s_hash, salt=salt, purchase=purchase
+            )
         else:
             instance = serializer.save(
-                secret_hash=s_hash, salt=salt, client=user
+                secret_hash=s_hash, salt=salt, client=user, purchase=purchase
             )
 
-        self._send_ticket_email(instance, secret)
+        # Update purchase total price
+        purchase.total_price += instance.price_paid
+        purchase.save()
 
-    def _send_ticket_email(self, instance, secret):
-        email_user = instance.client
-        data = {
-            'id': instance.pk,
-            'secret': secret,
-        }
-        qr_img = qr_encode(data)
-
-        buffer = io.BytesIO()
-        qr_img.save(buffer, kind='PNG')
-        buffer.seek(0)
-        image_data = buffer.read()
-
-        html_content = render_to_string(
-            'ticket_mail.html', {'first_name': email_user.first_name}
-        )
-        text_content = strip_tags(html_content)
-
-        msg = EmailMultiAlternatives(
-            "Secret", text_content, "from@example.com", [email_user.email]
-        )
-        msg.attach_alternative(html_content, "text/html")
-        mime_image = MIMEImage(image_data)
-        mime_image.add_header('Content-ID', '<ticket_qr>')
-        msg.attach(mime_image)
-
-        msg.send()
+        send_ticket_email(instance, secret)
 
     @action(detail=False, methods=['get'])
     def my_tickets(self, request):
@@ -254,7 +280,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         instance.secret_hash = s_hash
         instance.save()
 
-        self._send_ticket_email(instance, secret)
+        send_ticket_email(instance, secret)
 
         return Response(
             {"status": "ticket re-issued"}, status=status.HTTP_200_OK
