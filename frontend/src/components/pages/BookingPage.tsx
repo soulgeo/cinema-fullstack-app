@@ -111,7 +111,7 @@ const BookingPage = () => {
           <BackButton text="Back to Movie"/>
           <h1 className="text-3xl font-bold">Book Your Tickets</h1>
           <p className="text-base-content/70">
-            {screening.movie_title} • {new Date(screening.start_time).toLocaleString([], { 
+            {screening.movie.title} • {new Date(screening.start_time).toLocaleString([], { 
               weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
             })}
           </p>

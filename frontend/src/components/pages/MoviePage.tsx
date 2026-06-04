@@ -61,7 +61,7 @@ const MoviePage = () => {
   return (
     <Layout>
       <div className="flex flex-col w-full gap-8 py-8">
-        <BackButton text="Back to Home"/>
+        <BackButton/>
         <MovieShowcase movie={movie}/>
         <ScreeningSelect screenings={screenings}/>
       </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { dbApi } from "../../api/db";
-import type { Screening, Movie, Hall } from "../../api/types";
+import type { Screening } from "../../api/types";
 import toast from "react-hot-toast";
 import Loading from "../ui/Loading";
 import Card from "../ui/Card";
@@ -9,8 +9,6 @@ import DateSelector from "../ui/DateSelector";
 
 const StaffDashboard = () => {
   const [screenings, setScreenings] = useState<Screening[]>([]);
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [halls, setHalls] = useState<Hall[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -23,14 +21,8 @@ const StaffDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [screeningsData, moviesData, hallsData] = await Promise.all([
-          dbApi.screenings.list(),
-          dbApi.movies.list(),
-          dbApi.halls.list(),
-        ]);
+        const screeningsData = await dbApi.screenings.list();
         setScreenings(screeningsData);
-        setMovies(moviesData);
-        setHalls(hallsData);
       } catch {
         const err = "Failed to fetch dashboard data";
         toast.error(err);
@@ -58,7 +50,7 @@ const StaffDashboard = () => {
     screening: Screening
   ): "complete" | "playing" | "future" => {
     const start = new Date(screening.start_time).getTime();
-    const duration = parseDuration(screening.movie_duration);
+    const duration = parseDuration(screening.movie.duration);
     const end = start + duration;
     const now = currentTime.getTime();
 
@@ -72,9 +64,7 @@ const StaffDashboard = () => {
       const screeningDate = new Date(s.start_time).toISOString().split("T")[0];
       const matchesDate = screeningDate === selectedDate;
       const matchesMovie =
-        selectedMovie === "all" ||
-        s.movie.toString() === selectedMovie ||
-        s.movie_title === selectedMovie;
+        selectedMovie === "all" || s.movie.title === selectedMovie;
       const matchesHall = selectedHall === "all" || s.hall.name === selectedHall;
 
       const status = getScreeningStatus(s);
@@ -90,6 +80,14 @@ const StaffDashboard = () => {
   const datesWithScreenings = new Set(
     screenings.map((s) => new Date(s.start_time).toISOString().split("T")[0])
   );
+
+  const uniqueMovies = Array.from(
+    new Map(screenings.map((s) => [s.movie.id, s.movie])).values()
+  ).sort((a, b) => a.title.localeCompare(b.title));
+
+  const uniqueHalls = Array.from(
+    new Map(screenings.map((s) => [s.hall.id, s.hall])).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   if (loading) {
     return (
@@ -111,6 +109,7 @@ const StaffDashboard = () => {
           selectedDate={selectedDate}
           onDateSelect={setSelectedDate}
           datesWithScreenings={datesWithScreenings}
+          className="mb-6"
         />
 
         <div className="flex flex-row gap-4 mb-4">
@@ -124,7 +123,7 @@ const StaffDashboard = () => {
               onChange={(e) => setSelectedMovie(e.target.value)}
             >
               <option value="all">All Movies</option>
-              {movies.map(movie => (
+              {uniqueMovies.map(movie => (
                 <option key={movie.id} value={movie.title}>{movie.title}</option>
               ))}
             </select>
@@ -140,7 +139,7 @@ const StaffDashboard = () => {
               onChange={(e) => setSelectedHall(e.target.value)}
             >
               <option value="all">All Halls</option>
-              {halls.map(hall => (
+              {uniqueHalls.map(hall => (
                 <option key={hall.id} value={hall.name}>{hall.name}</option>
               ))}
             </select>
@@ -185,7 +184,7 @@ const StaffDashboard = () => {
                           <span
                             className={`text-2xl font-bold ${
                               status === "playing"
-                                ? "text-primary animate-pulse"
+                                ? "text-primary"
                                 : ""
                             }`}
                           >
@@ -193,19 +192,19 @@ const StaffDashboard = () => {
                             {startTime}{" "}
                           </span>
                           {status === "playing" && (
-                            <span className="badge badge-primary badge-sm font-bold">
+                            <span className="badge badge-error badge-sm font-bold mt-1">
                               PLAYING
                             </span>
                           )}
                           {status === "complete" && (
-                            <span className="badge badge-ghost badge-sm font-bold opacity-70">
+                            <span className="badge badge-ghost badge-sm font-bold opacity-70 mt-1">
                               COMPLETE
                             </span>
                           )}
                         </div>
                         <div className="flex flex-col gap-2 mt-1">
                           <h3 className="text-xl font-bold">
-                            {screening.movie_title}
+                            {screening.movie.title}
                           </h3>
                           <span className="text-sm opacity-70">
                             in {screening.hall.name}

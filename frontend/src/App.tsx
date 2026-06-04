@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 import TicketsPage from "./components/pages/TicketsPage";
 import { authApi } from "./api/auth";
 import StaffDashboard from "./components/pages/StaffDashboard";
+import SearchPage from "./components/pages/SearchPage";
 
 const requireAuthLoader = async () => {
   const { user } = await authApi.getSession();
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
     path: "/tickets",
     element: <TicketsPage />,
     loader: requireAuthLoader,
+  },
+  {
+    path: "/search",
+    element: <SearchPage />,
   },
   {
     path: "/staff",

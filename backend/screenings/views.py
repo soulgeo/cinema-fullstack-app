@@ -4,7 +4,7 @@ from email.mime.image import MIMEImage
 from typing import Any
 
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from rest_framework import permissions, status, viewsets
@@ -67,11 +67,60 @@ class ScreeningViewSet(viewsets.ModelViewSet):
         queryset = Screening.objects.all()
         request: Any = self.request
         movie_id = request.query_params.get('movie')
-        if movie_id is not None:
+        hall_id = request.query_params.get('hall')
+        date_str = request.query_params.get('date')
+        genres_str = request.query_params.get('genres')
+        time_min = request.query_params.get('time_min')
+        time_max = request.query_params.get('time_max')
+
+        if movie_id:
             queryset = queryset.filter(movie_id=movie_id)
+        
+        if hall_id:
+            queryset = queryset.filter(hall_id=hall_id)
+
+        if date_str:
+            try:
+                date_val = datetime.strptime(date_str, '%Y-%m-%d').date()
+                queryset = queryset.filter(start_time__date=date_val)
+            except ValueError:
+                pass
+
+        if genres_str:
+            genres = genres_str.split(',')
+            genre_queries = Q()
+            for genre in genres:
+                genre_queries |= Q(movie__genres__icontains=genre.strip())
+            queryset = queryset.filter(genre_queries)
+
+        if time_min:
+            try:
+                # time_min is in hours (e.g., 14.5 for 14:30)
+                h = float(time_min)
+                queryset = queryset.filter(start_time__hour__gte=int(h))
+            except ValueError:
+                pass
+
+        if time_max:
+            try:
+                h = float(time_max)
+                # This is a rough filter, the client will do more precise filtering
+                # to account for movie duration
+                queryset = queryset.filter(start_time__hour__lte=int(h))
+            except ValueError:
+                pass
 
         queryset = queryset.annotate(tickets_count_annotated=Count('tickets'))
         return queryset
+
+    @action(detail=False, methods=['get'])
+    def screening_dates(self, request):
+        dates = (
+            Screening.objects.all()
+            .values_list('start_time__date', flat=True)
+            .distinct()
+        )
+        return Response(list(dates))
 
     @action(detail=False, methods=['get'])
     def showing_today(self, request):
@@ -192,7 +241,7 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def my_tickets(self, request):
-        queryset = self.get_queryset()
+        queryset = Ticket.objects.filter(client=request.user)
         serializer = RichTicketSerializer(queryset, many=True)
         return Response(serializer.data)
 

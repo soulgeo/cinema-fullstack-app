@@ -40,12 +40,24 @@ export const dbApi = {
   },
 
   screenings: {
-    list: (movieId?: number) => {
-      const path = movieId ? `/screenings/?movie=${movieId}` : "/screenings/";
-      return dbRequest<Screening[]>(path);
+    list: (params?: { 
+      movie?: number; 
+      hall?: number; 
+      date?: string; 
+      genres?: string; 
+      time_min?: number; 
+      time_max?: number;
+    }) => {
+      const query = params 
+        ? "?" + new URLSearchParams(Object.entries(params)
+            .filter(([_, v]) => v !== undefined)
+            .map(([k, v]) => [k, String(v)]))
+        : "";
+      return dbRequest<Screening[]>(`/screenings/${query}`);
     },
     showingToday: () => dbRequest<Screening[]>("/screenings/showing_today"),
     get: (id: number) => dbRequest<Screening>(`/screenings/${id}/`),
+    screeningDates: () => dbRequest<string[]>("/screenings/screening_dates/"),
     create: (data: Partial<Screening>) => dbRequest<Screening>("/screenings/", {
       method: "POST",
       body: JSON.stringify(data),

@@ -95,3 +95,8 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.collapse[open],
+.collapse[open] .collapse-content {
+  overflow: visible !important;
+}

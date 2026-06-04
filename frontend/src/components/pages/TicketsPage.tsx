@@ -174,10 +174,6 @@ const TicketsPage = () => {
                   <RefreshCw size={12} />
                   Reissue All
                 </button>
-                <button className="btn btn-xs btn-outline btn-error gap-1">
-                  <X size={12} />
-                  Cancel All
-                </button>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -215,12 +211,6 @@ const TicketsPage = () => {
                           Reissue Ticket
                         </button>
                       </li>
-                      <li>
-                        <button className="flex items-center gap-2 text-error">
-                          <X size={16} />
-                          Cancel Ticket
-                        </button>
-                      </li>
                     </ul>
                   </div>
                 );
@@ -256,13 +246,13 @@ const TicketsPage = () => {
         ) : (
           <div className="flex flex-col gap-4">
             <details
-              className="collapse collapse-arrow bg-base-200 overflow-visible relative focus-within:z-50"
+              className="collapse collapse-arrow bg-base-200 relative focus-within:z-50"
               open={upcomingScreenings.length > 0}
             >
               <summary className="collapse-title text-md font-light">
                 Upcoming ({upcomingScreenings.length})
               </summary>
-              <div className="collapse-content flex flex-col gap-6 pt-4 overflow-visible">
+              <div className="collapse-content flex flex-col gap-6 pt-4">
                 {upcomingScreenings.length > 0 ? (
                   upcomingScreenings.map(renderScreening)
                 ) : (
@@ -274,7 +264,7 @@ const TicketsPage = () => {
             </details>
 
             <details
-              className="collapse collapse-arrow bg-base-200 overflow-visible relative focus-within:z-50"
+              className="collapse collapse-arrow bg-base-200 relative focus-within:z-50"
               open={
                 upcomingScreenings.length === 0 && pastScreenings.length > 0
               }
@@ -282,7 +272,7 @@ const TicketsPage = () => {
               <summary className="collapse-title text-md font-light">
                 Past Screenings ({pastScreenings.length})
               </summary>
-              <div className="collapse-content flex flex-col gap-6 pt-4 overflow-visible">
+              <div className="collapse-content flex flex-col gap-6 pt-4">
                 {pastScreenings.length > 0 ? (
                   pastScreenings.map(renderScreening)
                 ) : (

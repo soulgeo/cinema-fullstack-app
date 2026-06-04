@@ -62,12 +62,9 @@ export type Hall = {
 
 export type Screening = {
   id: number;
-  movie: number;
-  movie_title?: string;
-  movie_duration?: string;
+  movie: Movie;
   tickets_count?: number;
   hall: Hall;
-  hall_name?: string;
   start_time: string;
   base_price: string;
 };

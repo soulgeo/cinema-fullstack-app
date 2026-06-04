@@ -5,12 +5,16 @@ interface DateSelectorProps {
   selectedDate: string;
   onDateSelect: (date: string) => void;
   datesWithScreenings?: Set<string>;
+  className?: string;
+  small?: boolean;
 }
 
 const DateSelector = ({
   selectedDate,
   onDateSelect,
   datesWithScreenings = new Set(),
+  className,
+  small = false,
 }: DateSelectorProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -57,7 +61,7 @@ const DateSelector = ({
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const scrollAmount = 95;
+      const scrollAmount = small ? 75 : 95;
       scrollRef.current.scrollTo({
         left:
           scrollRef.current.scrollLeft +
@@ -68,12 +72,18 @@ const DateSelector = ({
   };
 
   return (
-    <div className="flex items-center gap-2 mb-6 w-full">
+    <div
+      className={`flex items-center ${small ? "gap-1" : "gap-2"} w-full ${
+        className || ""
+      }`}
+    >
       <button
         onClick={() => scroll("left")}
-        className="btn btn-ghost btn-circle btn-md hidden sm:flex shrink-0"
+        className={`btn btn-ghost btn-circle ${
+          small ? "btn-sm" : "btn-md"
+        } hidden sm:flex shrink-0`}
       >
-        <ChevronLeft size={28} />
+        <ChevronLeft size={small ? 20 : 28} />
       </button>
 
       <div
@@ -86,7 +96,11 @@ const DateSelector = ({
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
-        <div className="flex flex-nowrap gap-4 min-w-max px-2">
+        <div
+          className={`flex flex-nowrap ${
+            small ? "gap-2" : "gap-4"
+          } min-w-max px-2`}
+        >
           {dates.map((date) => {
             const dateStr = date.toISOString().split("T")[0];
             const isSelected = dateStr === selectedDate;
@@ -103,7 +117,9 @@ const DateSelector = ({
               <button
                 key={dateStr}
                 onClick={() => !hasMoved && onDateSelect(dateStr)}
-                className={`flex flex-col items-center justify-center min-w-20 p-4 rounded-xl transition-all pointer-events-auto ${
+                className={`flex flex-col items-center justify-center ${
+                  small ? "min-w-16 p-2" : "min-w-20 p-4"
+                } rounded-xl transition-all pointer-events-auto ${
                   isSelected
                     ? "bg-primary text-primary-content shadow-md scale-105"
                     : hasScreenings
@@ -111,11 +127,21 @@ const DateSelector = ({
                     : "bg-base-200 opacity-40 grayscale-50 hover:bg-base-300"
                 }`}
               >
-                <span className="text-xs uppercase font-bold opacity-70">
+                <span
+                  className={`${
+                    small ? "text-[10px]" : "text-xs"
+                  } uppercase font-bold opacity-70`}
+                >
                   {dayName}
                 </span>
-                <span className="text-xl font-bold">{dayNum}</span>
-                <span className="text-xs uppercase">{monthName}</span>
+                <span className={`${small ? "text-lg" : "text-xl"} font-bold`}>
+                  {dayNum}
+                </span>
+                <span
+                  className={`${small ? "text-[10px]" : "text-xs"} uppercase`}
+                >
+                  {monthName}
+                </span>
               </button>
             );
           })}
@@ -124,9 +150,11 @@ const DateSelector = ({
 
       <button
         onClick={() => scroll("right")}
-        className="btn btn-ghost btn-circle btn-md hidden sm:flex shrink-0"
+        className={`btn btn-ghost btn-circle ${
+          small ? "btn-sm" : "btn-md"
+        } hidden sm:flex shrink-0`}
       >
-        <ChevronRight size={28} />
+        <ChevronRight size={small ? 20 : 28} />
       </button>
     </div>
   );
