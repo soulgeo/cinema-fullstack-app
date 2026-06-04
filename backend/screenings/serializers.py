@@ -87,7 +87,8 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
 
     class Meta:  # type: ignore[override]
         model = Purchase
-        fields = ['tickets']
+        fields = ['id', 'tickets']
+        read_only_fields = ['id']
 
     def create(self, validated_data):
         tickets_data = validated_data.pop('tickets')
@@ -110,8 +111,6 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
                 **ticket_data
             )
             total_price += ticket.price_paid
-            
-            send_ticket_email(ticket, secret)
             
         purchase.total_price = total_price
         purchase.save()

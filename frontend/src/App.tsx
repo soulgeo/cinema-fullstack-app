@@ -7,6 +7,8 @@ import BookingPage from "./components/pages/BookingPage";
 import AccountPage from "./components/pages/AccountPage";
 import { AuthProvider } from "./context/AuthContext";
 import TicketsPage from "./components/pages/TicketsPage";
+import PurchasesPage from "./components/pages/PurchasesPage";
+import PaymentPage from "./components/pages/PaymentPage";
 import { authApi } from "./api/auth";
 import StaffDashboard from "./components/pages/StaffDashboard";
 import SearchPage from "./components/pages/SearchPage";
@@ -48,6 +50,16 @@ const router = createBrowserRouter([
   {
     path: "/tickets",
     element: <TicketsPage />,
+    loader: requireAuthLoader,
+  },
+  {
+    path: "/purchases",
+    element: <PurchasesPage />,
+    loader: requireAuthLoader,
+  },
+  {
+    path: "/payment/:purchaseId",
+    element: <PaymentPage />,
     loader: requireAuthLoader,
   },
   {

@@ -263,17 +263,24 @@ class TicketViewSet(viewsets.ModelViewSet):
         purchase.total_price += instance.price_paid
         purchase.save()
 
-        send_ticket_email(instance, secret)
-
     @action(detail=False, methods=['get'])
     def my_tickets(self, request):
-        queryset = Ticket.objects.filter(client=request.user)
+        queryset = Ticket.objects.filter(
+            client=request.user, purchase__status=Purchase.Status.PAID
+        )
         serializer = RichTicketSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
     def re_issue(self, request, pk=None):
         instance = self.get_object()
+
+        if instance.purchase.status != Purchase.Status.PAID:
+            return Response(
+                {"error": "Cannot re-issue a ticket for an unpaid purchase."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         secret, salt, s_hash = generate_secret_salt_and_hash()
 
         instance.salt = salt

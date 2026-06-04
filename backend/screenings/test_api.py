@@ -251,7 +251,7 @@ class CinemaAPITestCase(APITestCase):
 
     def test_staff_can_re_issue_ticket(self):
         _, salt, hash = generate_secret_salt_and_hash()
-        purchase = Purchase.objects.create(client=self.audience_user)
+        purchase = Purchase.objects.create(client=self.audience_user, status='PAID')
         ticket: Any = Ticket.objects.create(
             client=self.audience_user,
             screening=self.screening,

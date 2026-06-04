@@ -99,8 +99,10 @@ const UserDropdown = () => {
             <Link to="/account">Account</Link>
           </li>
           <li>
-
               <Link to="/tickets">My Tickets</Link>
+            </li>
+            <li>
+              <Link to="/purchases">My Purchases</Link>
             </li>
             <li>
               <span onClick={openLogoutModal} className="text-error">

@@ -17,6 +17,7 @@ const BookingPage = () => {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [occupiedSeatIds, setOccupiedSeatIds] = useState<Set<number>>(new Set());
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
+  const [payAtVenue, setPayAtVenue] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -71,14 +72,19 @@ const BookingPage = () => {
     setIsSubmitting(true);
     try {
       // Create a single purchase for all selected seats
-      await dbApi.purchases.create({
+      const purchase = await dbApi.purchases.create({
         tickets: selectedSeats.map((seat) => ({
           screening: screening.id,
           seat: seat.id,
         })),
       });
       toast.success("Tickets booked successfully!");
-      navigate("/");
+      
+      if (payAtVenue) {
+        navigate("/purchases");
+      } else {
+        navigate(`/payment/${purchase.id}`);
+      }
     } catch (err) {
       toast.error("Failed to book tickets. Please try again.");
       console.error(err);
@@ -230,12 +236,24 @@ const BookingPage = () => {
                 <p>Please review your selection. Tickets are non-refundable once purchased.</p>
               </div>
 
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-4 p-0">
+                  <input 
+                    type="checkbox" 
+                    className="checkbox checkbox-primary checkbox-sm rounded-md" 
+                    checked={payAtVenue}
+                    onChange={(e) => setPayAtVenue(e.target.checked)}
+                  />
+                  <span className="label-text font-medium text-base-content/70">I'll pay at the venue</span>
+                </label>
+              </div>
+
               <button 
                 className={`btn btn-primary btn-lg w-full ${isSubmitting ? "loading" : ""}`}
                 disabled={selectedSeats.length < 1 || isSubmitting}
                 onClick={handleConfirm}
               >
-                {isSubmitting ? "Processing..." : "Confirm & Pay"}
+                {isSubmitting ? "Processing..." : payAtVenue ? "Confirm Booking" : "Confirm & Pay"}
               </button>
             </section>
           </div>
