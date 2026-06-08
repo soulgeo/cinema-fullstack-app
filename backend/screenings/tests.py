@@ -100,38 +100,47 @@ class TicketModelTest(TestCase):
         )
 
     def test_ticket_price_calculation_regular(self):
+        from .models import Purchase
         _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(client=self.user)
         ticket = Ticket.objects.create(
             client=self.user,
             screening=self.screening,
             seat=self.regular_seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=purchase
         )
         self.assertEqual(ticket.price_paid, Decimal('10.00'))
 
     def test_ticket_price_calculation_vip(self):
+        from .models import Purchase
         _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(client=self.user)
         ticket = Ticket.objects.create(
             client=self.user,
             screening=self.screening,
             seat=self.vip_seat,
             salt=salt,
-            secret_hash=hash
+            secret_hash=hash,
+            purchase=purchase
         )
         # 10.00 * 1.5 = 15.00
         self.assertEqual(ticket.price_paid, Decimal('15.00'))
 
     def test_seat_hall_mismatch(self):
+        from .models import Purchase
         other_hall = Hall.objects.create(name="Hall 2", rows_count=5, cols_count=5, dolby_atmos=False)
         wrong_seat = Seat.objects.create(
             hall=other_hall, row_label="A", seat_number=1, grid_x=1, grid_y=1
         )
+        purchase = Purchase.objects.create(client=self.user)
         
         ticket = Ticket(
             client=self.user,
             screening=self.screening,
-            seat=wrong_seat
+            seat=wrong_seat,
+            purchase=purchase
         )
         
         with self.assertRaises(ValidationError):

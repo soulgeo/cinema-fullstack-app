@@ -6,6 +6,7 @@ import Loading from "../ui/Loading";
 import Card from "../ui/Card";
 import Layout from "../layout/Layout";
 import DateSelector from "../ui/DateSelector";
+import { Link } from "react-router";
 
 const StaffDashboard = () => {
   const [screenings, setScreenings] = useState<Screening[]>([]);
@@ -173,76 +174,78 @@ const StaffDashboard = () => {
                 const status = getScreeningStatus(screening);
 
                 return (
-                  <Card key={screening.id}>
-                    <div
-                      className={`flex flex-col md:flex-row md:items-center justify-between gap-4 transition-opacity ${
-                        status === "complete" ? "opacity-40 grayscale" : ""
-                      }`}
-                    >
-                      <div className="flex flex-row items-center gap-6">
-                        <div className="flex flex-col items-center min-w-30">
-                          <span
-                            className={`text-2xl font-bold ${
-                              status === "playing"
-                                ? "text-primary"
-                                : ""
-                            }`}
-                          >
-                            {" "}
-                            {startTime}{" "}
-                          </span>
-                          {status === "playing" && (
-                            <span className="badge badge-error badge-sm font-bold mt-1">
-                              PLAYING
-                            </span>
-                          )}
-                          {status === "complete" && (
-                            <span className="badge badge-ghost badge-sm font-bold opacity-70 mt-1">
-                              COMPLETE
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-col gap-2 mt-1">
-                          <h3 className="text-xl font-bold">
-                            {screening.movie.title}
-                          </h3>
-                          <span className="text-sm opacity-70">
-                            in {screening.hall.name}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col md:items-end gap-1 flex-1 md:max-w-xs">
-                        <div className="flex items-center justify-between w-full">
-                          <span className="text-xs font-medium opacity-70">
-                            Occupancy ({soldTickets}/{totalSeats})
-                          </span>
-                          {status !== "complete" && (
+                  <Link key={screening.id} to={`/staff/screenings/${screening.id}`}>
+                    <Card>
+                      <div
+                        className={`flex flex-col md:flex-row md:items-center justify-between gap-4 transition-opacity ${
+                          status === "complete" ? "opacity-40 grayscale" : ""
+                        }`}
+                      >
+                        <div className="flex flex-row items-center gap-6">
+                          <div className="flex flex-col items-center min-w-30">
                             <span
-                              className={`text-sm font-bold ${
-                                availableSeats === 0
-                                  ? "text-error"
-                                  : "text-success"
+                              className={`text-2xl font-bold ${
+                                status === "playing"
+                                  ? "text-primary"
+                                  : ""
                               }`}
                             >
-                              {availableSeats} seats left
+                              {" "}
+                              {startTime}{" "}
                             </span>
-                          )}
+                            {status === "playing" && (
+                              <span className="badge badge-error badge-sm font-bold mt-1">
+                                PLAYING
+                              </span>
+                            )}
+                            {status === "complete" && (
+                              <span className="badge badge-ghost badge-sm font-bold opacity-70 mt-1">
+                                COMPLETE
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-2 mt-1">
+                            <h3 className="text-xl font-bold">
+                              {screening.movie.title}
+                            </h3>
+                            <span className="text-sm opacity-70">
+                              in {screening.hall.name}
+                            </span>
+                          </div>
                         </div>
-                        <progress
-                          className={`progress w-full ${
-                            availableSeats === 0
-                              ? "progress-error"
-                              : status === "complete"
-                              ? ""
-                              : "progress-primary"
-                          }`}
-                          value={soldTickets}
-                          max={totalSeats}
-                        ></progress>
+
+                        <div className="flex flex-col md:items-end gap-1 flex-1 md:max-w-xs">
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-xs font-medium opacity-70">
+                              Occupancy ({soldTickets}/{totalSeats})
+                            </span>
+                            {status !== "complete" && (
+                              <span
+                                className={`text-sm font-bold ${
+                                  availableSeats === 0
+                                    ? "text-error"
+                                    : "text-success"
+                                }`}
+                              >
+                                {availableSeats} seats left
+                              </span>
+                            )}
+                          </div>
+                          <progress
+                            className={`progress w-full ${
+                              availableSeats === 0
+                                ? "progress-error"
+                                : status === "complete"
+                                ? ""
+                                : "progress-primary"
+                            }`}
+                            value={soldTickets}
+                            max={totalSeats}
+                          ></progress>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  </Link>
                 );
               })}
           </div>

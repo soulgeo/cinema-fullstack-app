@@ -4,7 +4,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta: # type: ignore[override]
         model = User
-        fields = ['first_name', 'last_name', 'phone_number', 'date_of_birth']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'date_of_birth', 'is_staff']
         extra_kwargs = {
             'date_of_birth': {'allow_null': True, 'required': False}
         }

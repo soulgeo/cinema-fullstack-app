@@ -24,7 +24,7 @@ const MovieShowcase = ({ movie }: MovieShowcaseProps) => {
       </div>
 
       <div className="flex-1 flex flex-col gap-4">
-        <div className="flex flex-wrap items-baseline gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <h1 className="text-4xl font-bold">{movie.title}</h1>
           <div className="badge badge-outline badge-lg">{movie.rating}</div>
         </div>

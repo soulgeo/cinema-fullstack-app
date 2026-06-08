@@ -272,3 +272,24 @@ class CinemaAPITestCase(APITestCase):
         ticket.refresh_from_db()
         self.assertNotEqual(ticket.secret_hash, old_hash)
         self.assertNotEqual(ticket.salt, old_salt)
+
+    def test_staff_can_book_for_client_via_purchase(self):
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('purchase-list')
+        
+        data = {
+            'client': self.audience_user.id,
+            'tickets': [
+                {'screening': self.screening.id, 'seat': self.seat.id},
+            ]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        purchase: Any = Purchase.objects.first()
+        self.assertEqual(purchase.client, self.audience_user)
+        
+        ticket: Any = Ticket.objects.first()
+        self.assertEqual(ticket.client, self.audience_user)
+        self.assertEqual(ticket.purchase, purchase)

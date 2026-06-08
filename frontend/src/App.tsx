@@ -11,6 +11,7 @@ import PurchasesPage from "./components/pages/PurchasesPage";
 import PaymentPage from "./components/pages/PaymentPage";
 import { authApi } from "./api/auth";
 import StaffDashboard from "./components/pages/StaffDashboard";
+import ScreeningOverview from "./components/pages/ScreeningOverview";
 import SearchPage from "./components/pages/SearchPage";
 
 const requireAuthLoader = async () => {
@@ -69,6 +70,11 @@ const router = createBrowserRouter([
   {
     path: "/staff",
     element: <StaffDashboard />,
+    loader: requireStaffLoader,
+  },
+  {
+    path: "/staff/screenings/:id",
+    element: <ScreeningOverview />,
     loader: requireStaffLoader,
   }
 ]);

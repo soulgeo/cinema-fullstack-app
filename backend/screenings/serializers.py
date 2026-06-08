@@ -87,21 +87,28 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
 
     class Meta:  # type: ignore[override]
         model = Purchase
-        fields = ['id', 'tickets']
+        fields = ['id', 'tickets', 'client']
         read_only_fields = ['id']
+        extra_kwargs = {
+            'client': {'required': False},
+        }
 
     def create(self, validated_data):
         tickets_data = validated_data.pop('tickets')
         request = self.context.get('request')
         user = request.user if request else None
         
-        purchase = Purchase.objects.create(client=user)
+        # If client is provided in validated_data and user is staff, use it.
+        # Otherwise use the request user.
+        client = validated_data.get('client', user)
+        
+        purchase = Purchase.objects.create(client=client)
         total_price = Decimal('0.00')
         
         for ticket_data in tickets_data:
             secret, salt, s_hash = generate_secret_salt_and_hash()
             # If client is not provided in ticket_data, use the purchase client
-            ticket_client = ticket_data.pop('client', user)
+            ticket_client = ticket_data.pop('client', client)
             
             ticket = Ticket.objects.create(
                 purchase=purchase,

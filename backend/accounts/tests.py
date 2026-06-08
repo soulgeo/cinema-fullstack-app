@@ -87,3 +87,47 @@ class UserPermissionTestCase(APITestCase):
         self.assertTrue(user_data['is_staff'])
         self.assertTrue(user_data['is_admin'])
 
+
+class UserViewSetTestCase(APITestCase):
+    def setUp(self):
+        from django.contrib.auth.models import Group
+        self.staff_group, _ = Group.objects.get_or_create(name='Staff')
+        
+        self.staff_user = User.objects.create_user(
+            email="staff@example.com",
+            password="Password123!",
+            first_name="Staff",
+            last_name="User",
+            phone_number="+1111111111"
+        )
+        self.staff_user.groups.add(self.staff_group)
+        
+        self.audience_user = User.objects.create_user(
+            email="audience@example.com",
+            password="Password123!",
+            first_name="Audience",
+            last_name="User",
+            phone_number="+2222222222"
+        )
+
+    def test_staff_can_list_users(self):
+        self.client.force_authenticate(user=self.staff_user)
+        url = "/api/users/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_staff_can_search_users(self):
+        self.client.force_authenticate(user=self.staff_user)
+        url = "/api/users/?search=audience"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['email'], "audience@example.com")
+
+    def test_audience_cannot_list_users(self):
+        self.client.force_authenticate(user=self.audience_user)
+        url = "/api/users/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+

@@ -111,7 +111,10 @@ export const dbApi = {
   purchases: {
     list: () => dbRequest<Purchase[]>("/purchases/"),
     get: (id: number) => dbRequest<Purchase>(`/purchases/${id}/`),
-    create: (data: { tickets: { screening: number; seat: number }[] }) => 
+    create: (data: { 
+      tickets: { screening: number; seat: number }[];
+      client?: number;
+    }) => 
       dbRequest<Purchase>("/purchases/", {
         method: "POST",
         body: JSON.stringify(data),
@@ -120,5 +123,13 @@ export const dbApi = {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
+  },
+
+  users: {
+    list: (search?: string) => {
+      const query = search ? `?search=${encodeURIComponent(search)}` : "";
+      return dbRequest<User[]>(`/users/${query}`);
+    },
+    get: (id: number) => dbRequest<User>(`/users/${id}/`),
   },
 };

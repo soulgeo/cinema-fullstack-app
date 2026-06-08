@@ -168,7 +168,7 @@ const SearchPage = () => {
         </div>
 
         {/* Time Range Range Slider */}
-        <div className="form-control">
+        <div className="form-control mb-4">
           <label className="label flex justify-between">
             <span className="label-text text-sm">Time Range</span>
             <span className="text-sm opacity-70">
