@@ -1,7 +1,7 @@
-import { request } from "./client";
+import { request, getBackendHost } from "./client";
 import type { AuthResponse, User, LoginCredentials, SignupData } from "./types";
 
-const AUTH_BASE = "http://localhost:8000/_allauth/browser/v1";
+const AUTH_BASE = `${getBackendHost()}/_allauth/browser/v1`;
 
 const authRequest = <T>(path: string, options: RequestInit = {}) => 
   request<T>(AUTH_BASE, path, options);

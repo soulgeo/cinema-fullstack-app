@@ -1,7 +1,7 @@
-import { request } from "./client";
+import { request, getBackendHost } from "./client";
 import type { Movie, Hall, Screening, Seat, Ticket, Purchase } from "./types";
 
-const DB_BASE = "http://localhost:8000/api";
+const DB_BASE = `${getBackendHost()}/api`;
 
 const dbRequest = <T>(path: string, options: RequestInit = {}) => 
   request<T>(DB_BASE, path, options);
@@ -50,7 +50,7 @@ export const dbApi = {
     }) => {
       const query = params 
         ? "?" + new URLSearchParams(Object.entries(params)
-            .filter(([_, v]) => v !== undefined)
+            .filter((entry) => entry[1] !== undefined)
             .map(([k, v]) => [k, String(v)]))
         : "";
       return dbRequest<Screening[]>(`/screenings/${query}`);
@@ -88,7 +88,17 @@ export const dbApi = {
   },
 
   tickets: {
-    list: () => dbRequest<Ticket[]>("/tickets/"),
+    list: (params?: { 
+      from_date?: string; 
+      till_date?: string;
+    }) => {
+      const query = params 
+        ? "?" + new URLSearchParams(Object.entries(params)
+            .filter((entry) => entry[1] !== undefined)
+            .map(([k, v]) => [k, String(v)]))
+        : "";
+      return dbRequest<Ticket[]>(`/tickets/${query}`);
+    },
     myTickets: () => dbRequest<import("./types").RichTicket[]>("/tickets/my_tickets/"),
     listByScreening: (screeningId: number) => dbRequest<Ticket[]>(`/tickets/?screening=${screeningId}`),
     get: (id: number) => dbRequest<Ticket>(`/tickets/${id}/`),
@@ -103,13 +113,27 @@ export const dbApi = {
     reissue: (id: number) => dbRequest<void>(`/tickets/${id}/re_issue/`, {
       method: "PATCH",
     }),
+    validate: (id: number, secret: string) => dbRequest<{ status: string; ticket: import("./types").RichTicket }>(`/tickets/${id}/validate_ticket/`, {
+      method: "POST",
+      body: JSON.stringify({ secret }),
+    }),
     delete: (id: number) => dbRequest<void>(`/tickets/${id}/`, {
       method: "DELETE",
     }),
   },
 
   purchases: {
-    list: () => dbRequest<Purchase[]>("/purchases/"),
+    list: (params?: { 
+      from_date?: string; 
+      till_date?: string;
+    }) => {
+      const query = params 
+        ? "?" + new URLSearchParams(Object.entries(params)
+            .filter((entry) => entry[1] !== undefined)
+            .map(([k, v]) => [k, String(v)]))
+        : "";
+      return dbRequest<Purchase[]>(`/purchases/${query}`);
+    },
     get: (id: number) => dbRequest<Purchase>(`/purchases/${id}/`),
     create: (data: { 
       tickets: { screening: number; seat: number }[];

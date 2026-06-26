@@ -178,6 +178,52 @@ class CinemaAPITestCase(APITestCase):
         first_ticket: Any = Ticket.objects.first()
         self.assertEqual(first_ticket.client, self.audience_user)
 
+    def test_staff_can_validate_ticket(self):
+        from screenings.hashing import generate_secret_salt_and_hash
+        secret, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(
+            client=self.audience_user, status=Purchase.Status.PAID
+        )
+        ticket: Any = Ticket.objects.create(
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash,
+            purchase=purchase,
+        )
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('ticket-validate-ticket', args=[ticket.id])
+        data = {'secret': secret}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ticket.refresh_from_db()
+        self.assertTrue(ticket.is_used)
+
+    def test_staff_cannot_validate_ticket_with_wrong_secret(self):
+        from screenings.hashing import generate_secret_salt_and_hash
+        _, salt, hash = generate_secret_salt_and_hash()
+        purchase = Purchase.objects.create(
+            client=self.audience_user, status=Purchase.Status.PAID
+        )
+        ticket: Any = Ticket.objects.create(
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash,
+            purchase=purchase,
+        )
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('ticket-validate-ticket', args=[ticket.id])
+        data = {'secret': 'wrong-secret'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        ticket.refresh_from_db()
+        self.assertFalse(ticket.is_used)
+
     def test_admin_full_crud_movie(self):
         cl: Any = self.client
         cl.force_authenticate(user=self.admin_user)

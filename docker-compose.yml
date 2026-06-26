@@ -3,8 +3,7 @@ services:
     build: frontend
     network_mode: "host"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./frontend:/app/frontend
     depends_on:
       - backend
   backend: 

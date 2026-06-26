@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from screenings.hashing import generate_secret_salt_and_hash
 from screenings.models import Hall, Movie, Purchase, Screening, Seat, Ticket
-from screenings.utils import send_ticket_email
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -19,7 +18,6 @@ class HallSerializer(serializers.ModelSerializer):
 
 
 class ScreeningSerializer(serializers.ModelSerializer):
-    movie = MovieSerializer(read_only=True)
     tickets_count = serializers.SerializerMethodField()
 
     class Meta:  # type: ignore[override]
@@ -28,6 +26,7 @@ class ScreeningSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        representation['movie'] = MovieSerializer(instance.movie).data
         representation['hall'] = HallSerializer(instance.hall).data
         return representation
 
@@ -106,8 +105,7 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
         total_price = Decimal('0.00')
         
         for ticket_data in tickets_data:
-            secret, salt, s_hash = generate_secret_salt_and_hash()
-            # If client is not provided in ticket_data, use the purchase client
+            _, salt, s_hash = generate_secret_salt_and_hash()
             ticket_client = ticket_data.pop('client', client)
             
             ticket = Ticket.objects.create(

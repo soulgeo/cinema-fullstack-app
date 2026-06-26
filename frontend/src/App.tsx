@@ -13,6 +13,8 @@ import { authApi } from "./api/auth";
 import StaffDashboard from "./components/pages/StaffDashboard";
 import ScreeningOverview from "./components/pages/ScreeningOverview";
 import SearchPage from "./components/pages/SearchPage";
+import ScanTickets from "./components/pages/ScanTickets";
+import AdminPanel from "./components/pages/AdminPanel";
 
 const requireAuthLoader = async () => {
   const { user } = await authApi.getSession();
@@ -25,6 +27,14 @@ const requireAuthLoader = async () => {
 const requireStaffLoader = async () => {
   const { user } = await authApi.getSession();
   if (!user?.is_staff) {
+    return redirect("/");
+  }
+  return null;
+}
+
+const requireAdminLoader = async () => {
+  const { user } = await authApi.getSession();
+  if (!user?.is_admin) {
     return redirect("/");
   }
   return null;
@@ -76,6 +86,16 @@ const router = createBrowserRouter([
     path: "/staff/screenings/:id",
     element: <ScreeningOverview />,
     loader: requireStaffLoader,
+  },
+  {
+    path: "/staff/scan",
+    element: <ScanTickets />,
+    loader: requireStaffLoader,
+  },
+  {
+    path: "/admin",
+    element: <AdminPanel />,
+    loader: requireAdminLoader,
   }
 ]);
 

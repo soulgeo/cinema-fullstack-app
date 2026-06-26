@@ -10,6 +10,9 @@ const Navigation = () => {
         { currentUser?.is_staff && (
           <Link to="/staff" className="btn btn-ghost">Staff Dashboard</Link>
         )}
+        { currentUser?.is_admin && (
+          <Link to="/admin" className="btn btn-ghost">Admin Panel</Link>
+        )}
       </div>
   );
 };

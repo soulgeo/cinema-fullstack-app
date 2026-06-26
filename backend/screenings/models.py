@@ -3,7 +3,6 @@ from decimal import Decimal
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.fields import related
 from django.utils.translation import gettext_lazy as _
 
 from screenings.hashing import SALT_LEN
@@ -130,7 +129,7 @@ class Purchase(models.Model):
     )
 
     def __str__(self):
-        return f"Purchase {self.id} by {self.client.email} - {self.status}"
+        return f"Purchase {self.pk} by {self.client.email} - {self.status}"
 
 
 class Ticket(models.Model):

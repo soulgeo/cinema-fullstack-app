@@ -1,13 +1,14 @@
-FROM node:25-alpine
+FROM node:22-alpine
 
 WORKDIR /app
-
 COPY package.json package-lock.json ./
-
 RUN npm install
 
+WORKDIR /app/frontend
 COPY . .
 
-EXPOSE 8000
+ENV PATH /app/node_modules/.bin:$PATH
+
+EXPOSE 5173
 
 CMD [ "npm", "run", "dev" ]

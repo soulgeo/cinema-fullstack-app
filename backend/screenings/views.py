@@ -1,12 +1,7 @@
-import io
 from datetime import datetime, time, timedelta
-from email.mime.image import MIMEImage
 from typing import Any
 
-from django.core.mail import EmailMultiAlternatives
 from django.db.models import Count, Q
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -14,7 +9,6 @@ from rest_framework.response import Response
 from screenings.hashing import generate_secret_salt_and_hash
 from screenings.models import Hall, Movie, Purchase, Screening, Seat, Ticket
 from screenings.permissions import IsAdminUser, IsStaffUser
-from screenings.qr import qr_encode
 from screenings.utils import send_ticket_email
 from screenings.serializers import (
     HallSerializer,
@@ -98,7 +92,6 @@ class ScreeningViewSet(viewsets.ModelViewSet):
 
         if time_min:
             try:
-                # time_min is in hours (e.g., 14.5 for 14:30)
                 h = float(time_min)
                 queryset = queryset.filter(start_time__hour__gte=int(h))
             except ValueError:
@@ -107,8 +100,6 @@ class ScreeningViewSet(viewsets.ModelViewSet):
         if time_max:
             try:
                 h = float(time_max)
-                # This is a rough filter, the client will do more precise filtering
-                # to account for movie duration
                 queryset = queryset.filter(start_time__hour__lte=int(h))
             except ValueError:
                 pass
@@ -176,23 +167,35 @@ class PurchaseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user: Any = self.request.user
+        request: Any = self.request
+        queryset = Purchase.objects.filter(client=user)
         if (
             user.is_superuser
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
-            return Purchase.objects.all()
-        return Purchase.objects.filter(client=user)
+            queryset = Purchase.objects.all()
+
+        from_date = request.query_params.get('from_date')
+        till_date = request.query_params.get('till_date')
+
+        if from_date:
+            try:
+                from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(paid_at__date__gte=from_date_val)
+            except ValueError:
+                pass
+
+        if till_date:
+            try:
+                from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(paid_at__date__lte=from_date_val)
+            except ValueError:
+                pass
+
+        return queryset
 
     def perform_create(self, serializer):
-        instance = serializer.save()
-        # After creating the purchase and its tickets, we might want to send emails.
-        # But wait, the tickets are created inside the serializer's create() method.
-        # We can loop through them here.
-        # However, TicketViewSet has the _send_ticket_email method.
-        # I'll move _send_ticket_email to a more accessible place if needed, 
-        # but for now I'll just re-implement or call it if I can.
-        # Actually, let's keep it simple: the purchase creation will trigger emails.
-        pass
+        serializer.save()
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -218,32 +221,49 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self) -> Any:  # type: ignore[override]
         request: Any = self.request
-        screening_id = request.query_params.get('screening')
         user: Any = request.user
         if not user.is_authenticated:
             return Ticket.objects.none()
 
+        queryset = Ticket.objects.filter(client=user)
         if (
             user.is_superuser
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
-            return Ticket.objects.all()
+            queryset = Ticket.objects.all()
+
+        screening_id = request.query_params.get('screening')
+        from_date = request.query_params.get('from_date')
+        till_date = request.query_params.get('till_date')
+
         if screening_id:
-            return Ticket.objects.filter(screening_id=screening_id)
-        return Ticket.objects.filter(client=user)
+            queryset = queryset.filter(screening_id=screening_id)
+
+        if from_date:
+            try:
+                from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(created_at__date__gte=from_date_val)
+            except ValueError:
+                pass
+
+        if till_date:
+            try:
+                from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(created_at__date__lte=from_date_val)
+            except ValueError:
+                pass
+
+        return queryset
 
     def perform_create(self, serializer):
-        secret, salt, s_hash = generate_secret_salt_and_hash()
+        _, salt, s_hash = generate_secret_salt_and_hash()
 
         user: Any = self.request.user
         request: Any = self.request
         
-        # Ensure a purchase exists
         purchase = serializer.validated_data.get('purchase')
         if not purchase:
             purchase = Purchase.objects.create(client=user)
-            # We will update the total_price later or in a signal, 
-            # but for now let's just use the ticket price.
         
         is_staff_or_admin = (
             user.is_superuser
@@ -259,7 +279,6 @@ class TicketViewSet(viewsets.ModelViewSet):
                 secret_hash=s_hash, salt=salt, client=user, purchase=purchase
             )
 
-        # Update purchase total price
         purchase.total_price += instance.price_paid
         purchase.save()
 
@@ -291,4 +310,45 @@ class TicketViewSet(viewsets.ModelViewSet):
 
         return Response(
             {"status": "ticket re-issued"}, status=status.HTTP_200_OK
+        )
+
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    def validate_ticket(self, request, pk=None):
+        instance = self.get_object()
+        secret = request.data.get('secret')
+
+        if not secret:
+            return Response(
+                {"error": "Secret is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from screenings.hashing import hash as hash_secret
+        computed_hash = hash_secret(secret, instance.salt)
+
+        if computed_hash != instance.secret_hash:
+            return Response(
+                {"error": "Invalid ticket secret."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if instance.is_used:
+            return Response(
+                {"error": "Ticket has already been used."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if instance.purchase.status != Purchase.Status.PAID:
+            return Response(
+                {"error": "Ticket belongs to an unpaid purchase."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        instance.is_used = True
+        instance.save()
+
+        serializer = RichTicketSerializer(instance)
+        return Response(
+            {"status": "validated", "ticket": serializer.data},
+            status=status.HTTP_200_OK,
         )

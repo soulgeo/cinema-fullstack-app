@@ -62,7 +62,7 @@ const SeatSelector = ({ seats, occupiedSeatIds, selectedSeats, onSeatClick }: Se
                             w-5 h-5 sm:w-7 sm:h-7 rounded-sm sm:rounded-md flex items-center justify-center transition-all relative group
                             ${isOccupied ? "bg-base-300 cursor-not-allowed opacity-30" : 
                               isSelected ? "bg-primary text-primary-content scale-110 shadow-lg" : 
-                              isVIP ? "bg-warning/10 border border-warning/30 hover:bg-warning/20 text-warning/70" : "bg-base-200 hover:bg-base-300 text-base-content/40 hover:text-base-content"}
+                              isVIP ? "bg-warning/10 border border-warning/30 hover:bg-warning/20 text-warning/70" : "bg-secondary hover:brightness-125 text-primary"}
                           `}
                           title={`${rowLabel}${seat.seat_number} - ${seat.seat_type}`}
                         >
@@ -85,7 +85,7 @@ const SeatSelector = ({ seats, occupiedSeatIds, selectedSeats, onSeatClick }: Se
       {/* Legend */}
       <div className="flex flex-wrap justify-center gap-6 text-sm mt-8">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-base-200"></div>
+          <div className="w-4 h-4 rounded bg-secondary"></div>
           <span>Available</span>
         </div>
         <div className="flex items-center gap-2">

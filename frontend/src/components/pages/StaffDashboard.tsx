@@ -101,9 +101,15 @@ const StaffDashboard = () => {
   return (
     <Layout>
       <div className="w-full py-8">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-base-content">Staff Dashboard</h1>
-          <p className="text-base-content/70">Screenings Overview</p>
+        <header className="mb-8 flex justify-between items-end">
+          <div>
+            <h1 className="text-3xl font-bold text-base-content">Staff Dashboard</h1>
+            <p className="text-base-content/70">Screenings Overview</p>
+          </div>
+          <Link to="/staff/scan" className="btn btn-primary font-bold">
+            <span className="text-xl">📷</span>
+            Scan Tickets
+          </Link>
         </header>
 
         <DateSelector

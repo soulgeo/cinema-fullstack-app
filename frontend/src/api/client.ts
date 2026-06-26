@@ -1,3 +1,10 @@
+export function getBackendHost(): string {
+  if (typeof window !== "undefined") {
+    return `${window.location.protocol}//${window.location.hostname}:8000`;
+  }
+  return "http://localhost:8000";
+}
+
 export async function getCSRFToken(): Promise<string | null> {
   const name = "csrftoken=";
   const decodedCookie = decodeURIComponent(document.cookie);
