@@ -281,7 +281,7 @@ const AdminPanel = () => {
         ) : (
           <>
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-6">
               <Card className="p-6 flex items-center gap-4 bg-linear-to-br from-primary/10 to-transparent border border-primary/20">
                 <div className="p-4 bg-primary text-primary-content rounded-2xl">
                   <DollarSign size={24} />
