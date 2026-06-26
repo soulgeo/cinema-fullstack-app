@@ -1,5 +1,5 @@
 import { request, getBackendHost } from "./client";
-import type { Movie, Hall, Screening, Seat, Ticket, Purchase } from "./types";
+import type { User, Movie, Hall, Screening, Seat, Ticket, Purchase } from "./types";
 
 const DB_BASE = `${getBackendHost()}/api`;
 

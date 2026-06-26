@@ -131,10 +131,6 @@ const ScreeningOverview = () => {
   }
 
   const occupiedSeatIds = new Set(tickets.map(t => t.seat));
-  const ticketBySeatId = tickets.reduce((acc, t) => {
-    acc[t.seat] = t;
-    return acc;
-  }, {} as Record<number, Ticket>);
 
   const startTime = new Date(screening.start_time);
   const formattedDate = startTime.toLocaleDateString(undefined, {

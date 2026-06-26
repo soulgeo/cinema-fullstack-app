@@ -7,7 +7,7 @@ interface QRScannerProps {
 }
 
 export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerProps) {
-  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
+  const [cameras, setCameras] = useState<{ id: string; label: string }[]>([]);
   const [selectedCameraId, setSelectedCameraId] = useState<string>("environment");
   const [isScanning, setIsScanning] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);

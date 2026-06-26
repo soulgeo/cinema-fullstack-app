@@ -128,6 +128,24 @@ class Purchase(models.Model):
         max_digits=10, decimal_places=2, default=Decimal('0.00')
     )
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                old_self = Purchase.objects.get(pk=self.pk)
+                if self.status == self.Status.PAID and old_self.status != self.Status.PAID and not self.paid_at:
+                    from django.utils import timezone
+                    self.paid_at = timezone.now()
+                elif self.status == self.Status.CANCELLED and old_self.status != self.Status.CANCELLED and not self.cancelled_at:
+                    from django.utils import timezone
+                    self.cancelled_at = timezone.now()
+            except Purchase.DoesNotExist:
+                pass
+        else:
+            if self.status == self.Status.PAID and not self.paid_at:
+                from django.utils import timezone
+                self.paid_at = timezone.now()
+        return super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Purchase {self.pk} by {self.client.email} - {self.status}"
 

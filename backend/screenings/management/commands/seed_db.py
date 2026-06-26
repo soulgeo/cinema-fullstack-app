@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from screenings.models import Movie, Hall, Screening, Seat
+from screenings.models import Movie, Hall, Screening, Seat, Purchase, Ticket
 
 User = get_user_model()
 
@@ -333,5 +333,104 @@ class Command(BaseCommand):
                             start_time=start_time,
                             base_price=Decimal('15.00') if hall.dolby_atmos else Decimal('10.00')
                         )
+
+        # 5. Generate Client Users
+        self.stdout.write('Generating client users...')
+        clients = []
+        client_data_list = [
+            {"email": "alice.w@example.com", "first_name": "Alice", "last_name": "Ward"},
+            {"email": "bob.m@example.com", "first_name": "Bob", "last_name": "Miller"},
+            {"email": "charlie.d@example.com", "first_name": "Charlie", "last_name": "Davis"},
+            {"email": "diana.p@example.com", "first_name": "Diana", "last_name": "Prince"},
+            {"email": "ethan.h@example.com", "first_name": "Ethan", "last_name": "Hunt"},
+            {"email": "fiona.g@example.com", "first_name": "Fiona", "last_name": "Gallagher"},
+            {"email": "george.c@example.com", "first_name": "George", "last_name": "Clark"},
+            {"email": "hannah.b@example.com", "first_name": "Hannah", "last_name": "Baker"},
+            {"email": "ian.m@example.com", "first_name": "Ian", "last_name": "Malcolm"},
+            {"email": "julia.r@example.com", "first_name": "Julia", "last_name": "Roberts"},
+        ]
+
+        for c_data in client_data_list:
+            user, created = User.objects.get_or_create(
+                email=c_data["email"],
+                defaults={
+                    "first_name": c_data["first_name"],
+                    "last_name": c_data["last_name"],
+                    "phone_number": f"+15550{random.randint(100, 999)}",
+                    "date_of_birth": date(random.randint(1975, 2005), random.randint(1, 12), random.randint(1, 28))
+                }
+            )
+            if created:
+                user.set_password("password123")
+                user.save()
+            clients.append(user)
+
+        # 6. Generate Purchases and Tickets
+        self.stdout.write('Clearing existing purchases and tickets...')
+        Ticket.objects.all().delete()
+        Purchase.objects.all().delete()
+
+        self.stdout.write('Generating purchases and tickets...')
+        all_screenings = list(Screening.objects.all())
+        from collections import defaultdict
+        booked_seats = defaultdict(set)
+
+        purchase_statuses = ['PAID', 'PENDING', 'CANCELLED']
+        status_weights = [0.80, 0.15, 0.05]
+
+        for client in clients:
+            num_purchases = random.randint(1, 4)
+            for _ in range(num_purchases):
+                status = random.choices(purchase_statuses, weights=status_weights)[0]
+                created_time = timezone.now() - timedelta(
+                    days=random.randint(0, 6),
+                    hours=random.randint(0, 23),
+                    minutes=random.randint(0, 59)
+                )
+                
+                purchase = Purchase.objects.create(
+                    client=client,
+                    status=status,
+                    created_at=created_time,
+                    paid_at=created_time if status == 'PAID' else None,
+                    cancelled_at=created_time if status == 'CANCELLED' else None
+                )
+                
+                total_price = Decimal('0.00')
+                num_tickets = random.randint(1, 3)
+                
+                for _ in range(num_tickets):
+                    screening = random.choice(all_screenings)
+                    all_seats = list(Seat.objects.filter(hall=screening.hall))
+                    available_seats = [s for s in all_seats if s.id not in booked_seats[screening.id]]
+                    
+                    if not available_seats:
+                        continue
+                        
+                    seat = random.choice(available_seats)
+                    booked_seats[screening.id].add(seat.id)
+                    
+                    multiplier = Decimal('1.5') if seat.seat_type == Seat.SeatType.VIP else Decimal('1.0')
+                    price_paid = (screening.base_price * multiplier).quantize(Decimal('0.01'))
+                    
+                    from screenings.hashing import generate_secret_salt_and_hash
+                    _, salt, s_hash = generate_secret_salt_and_hash()
+                    
+                    Ticket.objects.create(
+                        purchase=purchase,
+                        client=client,
+                        screening=screening,
+                        seat=seat,
+                        price_paid=price_paid,
+                        secret_hash=s_hash,
+                        salt=salt,
+                        created_at=created_time
+                    )
+                    total_price += price_paid
+                    
+                purchase.total_price = total_price
+                purchase.save()
+                # Override auto_now_add using update to preserve historical transaction dates
+                Purchase.objects.filter(pk=purchase.pk).update(created_at=created_time)
 
         self.stdout.write(self.style.SUCCESS('Seeding complete!'))

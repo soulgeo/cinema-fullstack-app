@@ -181,14 +181,20 @@ class PurchaseViewSet(viewsets.ModelViewSet):
         if from_date:
             try:
                 from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
-                queryset = queryset.filter(paid_at__date__gte=from_date_val)
+                queryset = queryset.filter(
+                    Q(paid_at__date__gte=from_date_val) |
+                    Q(paid_at__isnull=True, created_at__date__gte=from_date_val)
+                )
             except ValueError:
                 pass
 
         if till_date:
             try:
-                from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
-                queryset = queryset.filter(paid_at__date__lte=from_date_val)
+                till_date_val = datetime.strptime(till_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(
+                    Q(paid_at__date__lte=till_date_val) |
+                    Q(paid_at__isnull=True, created_at__date__lte=till_date_val)
+                )
             except ValueError:
                 pass
 
@@ -248,8 +254,8 @@ class TicketViewSet(viewsets.ModelViewSet):
 
         if till_date:
             try:
-                from_date_val = datetime.strptime(from_date, '%Y-%m-%d').date()
-                queryset = queryset.filter(created_at__date__lte=from_date_val)
+                till_date_val = datetime.strptime(till_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(created_at__date__lte=till_date_val)
             except ValueError:
                 pass
 
