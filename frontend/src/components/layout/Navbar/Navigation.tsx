@@ -6,7 +6,7 @@ const Navigation = () => {
   const { currentUser } = useAuth();
 
   return (
-      <div className="flex flex-row gap-2">
+      <div className="hidden md:flex flex-row gap-2">
         { currentUser?.is_admin && (
           <div className="dropdown dropdown-hover">
             <div tabIndex={0} role="button" className="btn btn-ghost flex items-center gap-1">
@@ -25,6 +25,9 @@ const Navigation = () => {
               </li>
               <li>
                 <Link to="/admin/screenings">Manage Screenings</Link>
+              </li>
+              <li>
+                <Link to="/admin/halls">Manage Halls</Link>
               </li>
             </ul>
           </div>

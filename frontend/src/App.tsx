@@ -17,6 +17,7 @@ import ScanTickets from "./components/pages/ScanTickets";
 import AdminPanel from "./components/pages/AdminPanel";
 import AdminMovies from "./components/pages/AdminMovies";
 import AdminScreenings from "./components/pages/AdminScreenings";
+import AdminHalls from "./components/pages/AdminHalls";
 
 
 const requireAuthLoader = async () => {
@@ -108,6 +109,11 @@ const router = createBrowserRouter([
   {
     path: "/admin/screenings",
     element: <AdminScreenings />,
+    loader: requireAdminLoader,
+  },
+  {
+    path: "/admin/halls",
+    element: <AdminHalls />,
     loader: requireAdminLoader,
   }
 ]);

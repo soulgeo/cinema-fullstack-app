@@ -87,7 +87,7 @@ const UserDropdown = () => {
   return (
     <>
       {userLoggedIn ? (
-        <div className="dropdown dropdown-end dropdown-hover">
+        <div className="dropdown dropdown-end dropdown-hover hidden md:inline-block">
           <div tabIndex={0} role="button" className="btn btn-outline px-3">
             <UserRound size={18} strokeWidth={3}/>{currentUser?.first_name}
           </div>
@@ -112,7 +112,7 @@ const UserDropdown = () => {
           </ul>
         </div>
       ) : (
-        <div className="dropdown dropdown-end dropdown-hover">
+        <div className="dropdown dropdown-end dropdown-hover hidden md:inline-block">
           <div tabIndex={0} role="button" className="btn btn-outline px-3">
             <UserRound size={18} strokeWidth={3}/> Members
           </div>
