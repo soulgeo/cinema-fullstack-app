@@ -127,8 +127,13 @@ const AdminMovies = () => {
       }
       setIsModalOpen(false);
       fetchMovies();
-    } catch (err: any) {
-      toast.error(err?.message || "An error occurred while saving the movie");
+    } catch (err) {
+      const errorObj = err as Record<string, unknown>;
+      toast.error(
+        typeof errorObj?.message === "string"
+          ? errorObj.message
+          : "An error occurred while saving the movie"
+      );
     }
   };
 

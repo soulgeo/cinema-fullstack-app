@@ -64,7 +64,7 @@ export const authApi = {
     });
   },
 
-  changePassword: async (data: any): Promise<AuthResponse> => {
+  changePassword: async (data: Record<string, unknown>): Promise<AuthResponse> => {
     return authRequest<AuthResponse>("/account/password/change", {
       method: "POST",
       body: JSON.stringify(data),

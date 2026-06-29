@@ -17,17 +17,20 @@ const toLocalDatetimeString = (isoString: string) => {
 };
 
 // Helper to unpack DRF error objects nicely
-const extractErrorMessage = (err: any): string => {
+const extractErrorMessage = (err: unknown): string => {
   if (typeof err === "string") return err;
   if (err && typeof err === "object") {
-    if (err.detail) return String(err.detail);
-    if (err.non_field_errors) {
-      if (Array.isArray(err.non_field_errors)) return err.non_field_errors.join(", ");
-      return String(err.non_field_errors);
+    const errorObj = err as Record<string, unknown>;
+    if (errorObj.detail) return String(errorObj.detail);
+    if (errorObj.non_field_errors) {
+      if (Array.isArray(errorObj.non_field_errors)) {
+        return errorObj.non_field_errors.join(", ");
+      }
+      return String(errorObj.non_field_errors);
     }
     // Try field errors
-    const firstFieldKey = Object.keys(err)[0];
-    const firstFieldErr = Object.values(err)[0];
+    const firstFieldKey = Object.keys(errorObj)[0];
+    const firstFieldErr = errorObj[firstFieldKey];
     if (firstFieldErr) {
       const prefix = firstFieldKey !== "detail" ? `${firstFieldKey}: ` : "";
       if (Array.isArray(firstFieldErr)) return `${prefix}${firstFieldErr.join(", ")}`;
@@ -115,12 +118,12 @@ const AdminScreenings = () => {
     // Convert local datetime-local value to ISO string with timezone offset (standard)
     const isoStartTime = new Date(startTime).toISOString();
 
-    const screeningData: Partial<Screening> = {
-      movie: parseInt(movieId) as any, // backend expects integer ID
-      hall: parseInt(hallId) as any, // backend expects integer ID
+    const screeningData = {
+      movie: parseInt(movieId),
+      hall: parseInt(hallId),
       start_time: isoStartTime,
       base_price: basePrice,
-    };
+    } as unknown as Partial<Screening>;
 
     try {
       if (editingScreening) {
@@ -132,7 +135,7 @@ const AdminScreenings = () => {
       }
       setIsModalOpen(false);
       fetchData();
-    } catch (err: any) {
+    } catch (err) {
       toast.error(extractErrorMessage(err));
     }
   };

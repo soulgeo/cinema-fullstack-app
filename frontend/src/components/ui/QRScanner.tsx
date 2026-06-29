@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Html5Qrcode, type Html5QrcodeResult } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeScannerState, type Html5QrcodeResult } from "html5-qrcode";
 
 interface QRScannerProps {
   onScanSuccess: (text: string, result: Html5QrcodeResult) => void;
@@ -12,14 +12,25 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
   const [isScanning, setIsScanning] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const qrCodeRef = useRef<Html5Qrcode | null>(null);
+  const activeRef = useRef(true);
   const elementId = "custom-qr-reader";
 
   useEffect(() => {
+    activeRef.current = true;
     const html5Qrcode = new Html5Qrcode(elementId);
     qrCodeRef.current = html5Qrcode;
 
     Html5Qrcode.getCameras()
       .then((devices) => {
+        if (!activeRef.current) {
+          try {
+            html5Qrcode.clear();
+          } catch {
+            // Ignore
+          }
+          return;
+        }
+
         if (devices && devices.length > 0) {
           setCameras(devices);
           setHasPermission(true);
@@ -29,19 +40,39 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
         }
       })
       .catch((err) => {
+        if (!activeRef.current) return;
         console.error("Error getting cameras:", err);
         setHasPermission(false);
       });
 
     return () => {
-      if (html5Qrcode.isScanning) {
-        html5Qrcode.stop().catch((e) => console.error("Error stopping on unmount:", e));
-      }
+      activeRef.current = false;
+      const stopAndClear = async () => {
+        try {
+          if (html5Qrcode.getState() === Html5QrcodeScannerState.SCANNING) {
+            await html5Qrcode.stop();
+          }
+          html5Qrcode.clear();
+        } catch (e) {
+          console.error("Error stopping on unmount:", e);
+        }
+      };
+      stopAndClear();
     };
   }, []);
 
   const startScanning = async (scannerInstance = qrCodeRef.current, cameraIdOrMode = selectedCameraId) => {
-    if (!scannerInstance || scannerInstance.isScanning) return;
+    if (!scannerInstance) return;
+
+    try {
+      if (scannerInstance.getState() === Html5QrcodeScannerState.SCANNING) {
+        return;
+      }
+    } catch {
+      // Ignore if state check fails
+    }
+
+    if (!activeRef.current) return;
 
     try {
       const config = {
@@ -63,6 +94,12 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
           onScanFailure(error);
         }
       );
+
+      if (!activeRef.current) {
+        await scannerInstance.stop();
+        return;
+      }
+
       setIsScanning(true);
     } catch (err) {
       console.error("Failed to start scanning:", err);
@@ -71,10 +108,12 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
   };
 
   const stopScanning = async () => {
-    if (!qrCodeRef.current || !qrCodeRef.current.isScanning) return;
+    if (!qrCodeRef.current) return;
 
     try {
-      await qrCodeRef.current.stop();
+      if (qrCodeRef.current.getState() === Html5QrcodeScannerState.SCANNING) {
+        await qrCodeRef.current.stop();
+      }
       setIsScanning(false);
     } catch (err) {
       console.error("Failed to stop scanning:", err);
@@ -84,8 +123,12 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
   const handleCameraChange = async (cameraId: string) => {
     setSelectedCameraId(cameraId);
     if (qrCodeRef.current) {
-      if (qrCodeRef.current.isScanning) {
-        await qrCodeRef.current.stop();
+      try {
+        if (qrCodeRef.current.getState() === Html5QrcodeScannerState.SCANNING) {
+          await qrCodeRef.current.stop();
+        }
+      } catch (e) {
+        // Ignore
       }
       await startScanning(qrCodeRef.current, cameraId);
     }

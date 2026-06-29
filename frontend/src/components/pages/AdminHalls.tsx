@@ -148,9 +148,14 @@ const AdminHalls = () => {
         setIsModalOpen(false);
         fetchHalls();
       }
-    } catch (err: any) {
+    } catch (err) {
       toast.dismiss("seat-gen");
-      toast.error(err?.message || "An error occurred while saving the hall");
+      const errorObj = err as Record<string, unknown>;
+      toast.error(
+        typeof errorObj?.message === "string"
+          ? errorObj.message
+          : "An error occurred while saving the hall"
+      );
     } finally {
       setActionLoading(false);
     }
@@ -211,7 +216,7 @@ const AdminHalls = () => {
         {/* Header */}
         <header className="flex justify-between items-end flex-wrap gap-4 border-b border-base-content/10 pb-4">
           <div>
-            <h1 className="text-3xl font-black text-base-content tracking-tight">Manage Halls</h1>
+            <h1 className="text-3xl font-bold text-base-content tracking-tight">Manage Halls</h1>
             <p className="text-base-content/70 font-medium">Add, edit, and delete cinema screen halls</p>
           </div>
           <button onClick={openAddModal} className="btn btn-primary font-bold flex gap-2">
