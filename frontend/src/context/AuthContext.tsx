@@ -10,7 +10,7 @@ interface AuthContextType {
   showSignup: boolean;
   setShowLogin: (show: boolean) => void;
   setShowSignup: (show: boolean) => void;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User | null>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
@@ -64,12 +64,14 @@ export function AuthProvider({ children }: Props) {
     }
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = async (credentials: LoginCredentials): Promise<User | null> => {
     const res = await authApi.login(credentials);
     if (res.data?.user) {
       setCurrentUser(res.data.user);
       setUserLoggedIn(true);
+      return res.data.user;
     }
+    return null;
   };
 
   const signup = async (data: SignupData) => {

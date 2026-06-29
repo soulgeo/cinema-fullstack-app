@@ -17,7 +17,7 @@ const Login = ({ closeModal, onShowSignup, /*next*/ }: LoginProps) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login, currentUser } = useAuth();
+  const { login } = useAuth();
 
   const onSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -31,15 +31,15 @@ const Login = ({ closeModal, onShowSignup, /*next*/ }: LoginProps) => {
     });
 
     try {
-      await loginPromise;
+      const user = await loginPromise;
       if (closeModal) {
         closeModal();
       }
-      if (currentUser?.is_admin) {
-        navigate("/admin")
+      if (user?.is_admin) {
+        navigate("/admin");
       }
-      else if (currentUser?.is_staff) {
-        navigate("/staff")
+      else if (user?.is_staff) {
+        navigate("/staff");
       }
       // navigate(next ?? "/");
     } catch {
