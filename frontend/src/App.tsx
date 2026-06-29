@@ -15,6 +15,9 @@ import ScreeningOverview from "./components/pages/ScreeningOverview";
 import SearchPage from "./components/pages/SearchPage";
 import ScanTickets from "./components/pages/ScanTickets";
 import AdminPanel from "./components/pages/AdminPanel";
+import AdminMovies from "./components/pages/AdminMovies";
+import AdminScreenings from "./components/pages/AdminScreenings";
+
 
 const requireAuthLoader = async () => {
   const { user } = await authApi.getSession();
@@ -95,6 +98,16 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPanel />,
+    loader: requireAdminLoader,
+  },
+  {
+    path: "/admin/movies",
+    element: <AdminMovies />,
+    loader: requireAdminLoader,
+  },
+  {
+    path: "/admin/screenings",
+    element: <AdminScreenings />,
     loader: requireAdminLoader,
   }
 ]);
