@@ -60,25 +60,24 @@ const AdminScreenings = () => {
   // Delete confirmation state
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [screeningsData, moviesData, hallsData] = await Promise.all([
-        dbApi.screenings.list(),
-        dbApi.movies.list(),
-        dbApi.halls.list(),
-      ]);
-      setScreenings(screeningsData);
-      setMovies(moviesData.filter((m) => m.is_active));
-      setHalls(hallsData);
-    } catch {
-      toast.error("Failed to load screenings details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [screeningsData, moviesData, hallsData] = await Promise.all([
+          dbApi.screenings.list(),
+          dbApi.movies.list(),
+          dbApi.halls.list(),
+        ]);
+        setScreenings(screeningsData);
+        setMovies(moviesData.filter((m) => m.is_active));
+        setHalls(hallsData);
+      } catch {
+        toast.error("Failed to load screenings details");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchData();
   }, []);
 
@@ -175,7 +174,7 @@ const AdminScreenings = () => {
         {/* Header */}
         <header className="flex justify-between items-end flex-wrap gap-4 border-b border-base-content/10 pb-4">
           <div>
-            <h1 className="text-3xl font-black text-base-content tracking-tight">Manage Screenings</h1>
+            <h1 className="text-3xl font-bold text-base-content tracking-tight">Manage Screenings</h1>
             <p className="text-base-content/70 font-medium">Schedule film screenings and allocate halls</p>
           </div>
           <button
@@ -196,7 +195,7 @@ const AdminScreenings = () => {
                 <span className="label-text text-[10px] font-black uppercase text-base-content/50">Filter Movie</span>
               </label>
               <select
-                className="select select-sm select-bordered w-56 font-semibold bg-base-100"
+                className="select select-sm select-bordered w-56 font-semibold bg-base-100 ml-2"
                 value={filterMovie}
                 onChange={(e) => setFilterMovie(e.target.value)}
               >
@@ -214,7 +213,7 @@ const AdminScreenings = () => {
                 <span className="label-text text-[10px] font-black uppercase text-base-content/50">Filter Hall</span>
               </label>
               <select
-                className="select select-sm select-bordered w-48 font-semibold bg-base-100"
+                className="select select-sm select-bordered w-48 font-semibold bg-base-100 ml-2"
                 value={filterHall}
                 onChange={(e) => setFilterHall(e.target.value)}
               >

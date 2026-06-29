@@ -35,7 +35,10 @@ const Login = ({ closeModal, onShowSignup, /*next*/ }: LoginProps) => {
       if (closeModal) {
         closeModal();
       }
-      if (currentUser?.is_staff) {
+      if (currentUser?.is_admin) {
+        navigate("/admin")
+      }
+      else if (currentUser?.is_staff) {
         navigate("/staff")
       }
       // navigate(next ?? "/");

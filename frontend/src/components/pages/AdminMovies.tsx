@@ -156,7 +156,7 @@ const AdminMovies = () => {
         {/* Header */}
         <header className="flex justify-between items-end flex-wrap gap-4 border-b border-base-content/10 pb-4">
           <div>
-            <h1 className="text-3xl font-black text-base-content tracking-tight">Manage Movies</h1>
+            <h1 className="text-3xl font-bold text-base-content tracking-tight">Manage Movies</h1>
             <p className="text-base-content/70 font-medium">Add, edit, and deactivate movies in the catalog</p>
           </div>
           <button onClick={openAddModal} className="btn btn-primary font-bold flex gap-2">
@@ -509,7 +509,7 @@ const AdminMovies = () => {
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}
                   />
-                  <label htmlFor="isActive" className="cursor-pointer font-bold text-sm text-base-content">
+                  <label htmlFor="isActive" className="cursor-pointer font-bold text-sm text-base-content ml-2">
                     Active (visible in public schedule and searches)
                   </label>
                 </div>

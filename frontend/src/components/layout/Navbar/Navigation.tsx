@@ -7,10 +7,6 @@ const Navigation = () => {
 
   return (
       <div className="flex flex-row gap-2">
-        <Link to="/search" className="btn btn-ghost">Find Movies</Link>
-        { currentUser?.is_staff && (
-          <Link to="/staff" className="btn btn-ghost">Staff Dashboard</Link>
-        )}
         { currentUser?.is_admin && (
           <div className="dropdown dropdown-hover">
             <div tabIndex={0} role="button" className="btn btn-ghost flex items-center gap-1">
@@ -33,6 +29,10 @@ const Navigation = () => {
             </ul>
           </div>
         )}
+        { currentUser?.is_staff && (
+          <Link to="/staff" className="btn btn-ghost">Staff Dashboard</Link>
+        )}
+        <Link to="/search" className="btn btn-ghost">Find Movies</Link>
       </div>
   );
 };

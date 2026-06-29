@@ -248,7 +248,7 @@ const AdminPanel = () => {
         {/* Header */}
         <header className="flex justify-between items-end flex-wrap gap-4 border-b border-base-content/10 pb-4">
           <div>
-            <h1 className="text-3xl font-black text-base-content tracking-tight">Admin Panel</h1>
+            <h1 className="text-3xl font-bold text-base-content tracking-tight">Admin Panel</h1>
             <p className="text-base-content/70 font-medium">Weekly Cinema Sales Report & Analytics</p>
           </div>
           
