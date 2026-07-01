@@ -434,3 +434,35 @@ class CinemaAPITestCase(APITestCase):
         purchase.refresh_from_db()
         self.assertEqual(purchase.status, 'CANCELLED')
         self.assertEqual(Ticket.objects.count(), 0)
+
+    def test_audience_user_can_pay_for_own_pending_purchase(self):
+        # Create a pending purchase for audience user
+        purchase = Purchase.objects.create(client=self.audience_user, status=Purchase.Status.PENDING)
+        
+        # Authenticate as audience user
+        cl: Any = self.client
+        cl.force_authenticate(user=self.audience_user)
+        url = reverse('purchase-detail', args=[purchase.id])
+
+        # Try to pay (update status to PAID) -> should be allowed
+        response = self.client.patch(url, {'status': 'PAID'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        purchase.refresh_from_db()
+        self.assertEqual(purchase.status, 'PAID')
+
+        # Try to cancel own purchase -> should return 403 Forbidden
+        response = self.client.patch(url, {'status': 'CANCELLED'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Try to update another user's purchase -> should return 404 (due to get_queryset restriction)
+        other_user = User.objects.create_user(
+            email='other@test.com',
+            password='password',
+            first_name='Other',
+            last_name='User',
+            phone_number='+1999999999'
+        )
+        other_purchase = Purchase.objects.create(client=other_user, status=Purchase.Status.PENDING)
+        other_url = reverse('purchase-detail', args=[other_purchase.id])
+        response = self.client.patch(other_url, {'status': 'PAID'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
