@@ -17,12 +17,13 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
 
   useEffect(() => {
     activeRef.current = true;
+    let active = true;
     const html5Qrcode = new Html5Qrcode(elementId);
     qrCodeRef.current = html5Qrcode;
 
     Html5Qrcode.getCameras()
       .then((devices) => {
-        if (!activeRef.current) {
+        if (!active) {
           try {
             html5Qrcode.clear();
           } catch {
@@ -40,13 +41,14 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
         }
       })
       .catch((err) => {
-        if (!activeRef.current) return;
+        if (!active) return;
         console.error("Error getting cameras:", err);
         setHasPermission(false);
       });
 
     return () => {
       activeRef.current = false;
+      active = false;
       const stopAndClear = async () => {
         try {
           if (html5Qrcode.getState() === Html5QrcodeScannerState.SCANNING) {
@@ -88,6 +90,13 @@ export default function QrScanner({ onScanSuccess, onScanFailure }: QRScannerPro
         cameraConfig,
         config,
         (decodedText, decodedResult) => {
+          scannerInstance.stop()
+            .then(() => {
+              setIsScanning(false);
+            })
+            .catch((err) => {
+              console.error("Failed to stop scanner on success:", err);
+            });
           onScanSuccess(decodedText, decodedResult);
         },
         (error) => {

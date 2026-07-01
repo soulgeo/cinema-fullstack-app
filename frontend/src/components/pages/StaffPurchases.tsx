@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import Loading from "../ui/Loading";
 import Card from "../ui/Card";
 import { Search, X, ShoppingBag } from "lucide-react";
-import BackButton from "../ui/BackButton";
+
 
 const StaffPurchases = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);

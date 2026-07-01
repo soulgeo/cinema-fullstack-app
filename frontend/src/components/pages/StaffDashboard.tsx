@@ -7,7 +7,7 @@ import Card from "../ui/Card";
 import Layout from "../layout/Layout";
 import DateSelector from "../ui/DateSelector";
 import { Link } from "react-router";
-import { QrCodeIcon, SearchIcon, ShoppingBagIcon } from "lucide-react";
+import { QrCodeIcon, SearchIcon } from "lucide-react";
 
 const StaffDashboard = () => {
   const [screenings, setScreenings] = useState<Screening[]>([]);

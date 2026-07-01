@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Layout from "../layout/Layout";
 import { dbApi } from "../../api/db";
 import type { Screening, Movie, Hall } from "../../api/types";
@@ -63,26 +63,27 @@ const AdminScreenings = () => {
   // Delete confirmation state
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [screeningsData, moviesData, hallsData] = await Promise.all([
-          dbApi.screenings.list(),
-          dbApi.movies.list(),
-          dbApi.halls.list(),
-        ]);
-        setScreenings(screeningsData);
-        setMovies(moviesData.filter((m) => m.is_active));
-        setHalls(hallsData);
-      } catch {
-        toast.error("Failed to load screenings details");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [screeningsData, moviesData, hallsData] = await Promise.all([
+        dbApi.screenings.list(),
+        dbApi.movies.list(),
+        dbApi.halls.list(),
+      ]);
+      setScreenings(screeningsData);
+      setMovies(moviesData.filter((m) => m.is_active));
+      setHalls(hallsData);
+    } catch {
+      toast.error("Failed to load screenings details");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const openAddModal = () => {
     setEditingScreening(null);
