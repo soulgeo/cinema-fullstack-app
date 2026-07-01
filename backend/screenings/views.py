@@ -54,7 +54,7 @@ class ScreeningViewSet(viewsets.ModelViewSet):
     serializer_class = ScreeningSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'screening_dates', 'showing_today']:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [IsAdminUser]

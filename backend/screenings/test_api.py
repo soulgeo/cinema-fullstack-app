@@ -74,6 +74,12 @@ class CinemaAPITestCase(APITestCase):
         response = self.client.get(reverse('screening-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        response = self.client.get(reverse('screening-screening-dates'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(reverse('screening-showing-today'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_audience_can_buy_ticket(self):
         cl: Any = self.client
         cl.force_authenticate(user=self.audience_user)

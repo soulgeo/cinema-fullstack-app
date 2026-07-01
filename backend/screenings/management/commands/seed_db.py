@@ -36,6 +36,57 @@ class Command(BaseCommand):
             admin_user.groups.add(admin_group)
             self.stdout.write(f'Created admin user: admin')
 
+        # Create standard test accounts listed in README
+        aud_user, created = User.objects.get_or_create(
+            email='audience@test.com',
+            defaults={
+                'first_name': 'Audience',
+                'last_name': 'Tester',
+                'is_staff': False,
+                'is_superuser': False,
+                'phone_number': '+1111111111',
+                'date_of_birth': date(1990, 1, 1)
+            }
+        )
+        if created:
+            aud_user.set_password('password123')
+            aud_user.save()
+            self.stdout.write('Created test user: audience@test.com')
+
+        st_user, created = User.objects.get_or_create(
+            email='staff@test.com',
+            defaults={
+                'first_name': 'Staff',
+                'last_name': 'Tester',
+                'is_staff': True,
+                'is_superuser': False,
+                'phone_number': '+2222222222',
+                'date_of_birth': date(1990, 1, 1)
+            }
+        )
+        if created:
+            st_user.set_password('password123')
+            st_user.save()
+            st_user.groups.add(staff_group)
+            self.stdout.write('Created test user: staff@test.com')
+
+        ad_user, created = User.objects.get_or_create(
+            email='admin@test.com',
+            defaults={
+                'first_name': 'Admin',
+                'last_name': 'Tester',
+                'is_staff': True,
+                'is_superuser': True,
+                'phone_number': '+3333333333',
+                'date_of_birth': date(1990, 1, 1)
+            }
+        )
+        if created:
+            ad_user.set_password('password123')
+            ad_user.save()
+            ad_user.groups.add(admin_group)
+            self.stdout.write('Created test user: admin@test.com')
+
         # Create some test users
         test_users = [
             {

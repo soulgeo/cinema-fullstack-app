@@ -7,6 +7,7 @@ import Card from "../ui/Card";
 import Layout from "../layout/Layout";
 import DateSelector from "../ui/DateSelector";
 import { Link } from "react-router";
+import { QrCodeIcon, SearchIcon, ShoppingBagIcon } from "lucide-react";
 
 const StaffDashboard = () => {
   const [screenings, setScreenings] = useState<Screening[]>([]);
@@ -101,15 +102,21 @@ const StaffDashboard = () => {
   return (
     <Layout>
       <div className="w-full py-8">
-        <header className="mb-8 flex justify-between items-end">
+        <header className="flex w-full justify-between items-end flex-wrap gap-4 border-b border-base-content/10 pb-4 mb-4">
           <div>
             <h1 className="text-3xl font-bold text-base-content">Staff Dashboard</h1>
-            <p className="text-base-content/70">Screenings Overview</p>
+            <p className="text-base-content/70 font-medium">Screenings Overview</p>
           </div>
-          <Link to="/staff/scan" className="btn btn-primary font-bold">
-            <span className="text-xl">📷</span>
-            Scan Tickets
-          </Link>
+          <div className="flex flex-row justify-end gap-4">
+            <Link to="/staff/purchases" className="btn btn-secondary font-bold">
+              <SearchIcon size={18}/>
+              Search Purchases
+            </Link>
+            <Link to="/staff/scan" className="btn btn-primary font-bold">
+              <QrCodeIcon size={18}/>
+              Scan Tickets
+            </Link>
+          </div>
         </header>
 
         <DateSelector

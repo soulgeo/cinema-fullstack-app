@@ -103,13 +103,12 @@ const StaffPurchases = () => {
 
   return (
     <Layout fullWidth={true}>
-      <div className="w-full p-8 pt-2 flex flex-col gap-6 animate-fade-in">
+      <div className="w-full p-8 pt-2 flex flex-col gap-4 animate-fade-in">
         {/* Header */}
         <header className="flex justify-between items-end flex-wrap gap-4 border-b border-base-content/10 pb-4">
-          <div className="flex flex-col gap-2">
-            <BackButton />
+          <div>
             <h1 className="text-3xl font-bold text-base-content tracking-tight">Search Purchases</h1>
-            <p className="text-base-content/70 font-medium">Search customer bookings and manage status cancellations</p>
+            <p className="text-base-content/70 font-medium">Search customer bookings and manage cancellations</p>
           </div>
         </header>
 

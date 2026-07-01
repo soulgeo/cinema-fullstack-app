@@ -224,7 +224,7 @@ const TicketsPage = () => {
 
   return (
     <Layout>
-      <div className="w-full flex flex-col gap-4 mx-auto py-4">
+      <div className="w-full flex flex-col gap-8 mx-auto py-8">
         <div className="flex flex-col gap-2">
           <BackButton />
           <h1 className="text-3xl font-bold">My Tickets</h1>
