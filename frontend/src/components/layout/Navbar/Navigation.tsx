@@ -10,7 +10,7 @@ const Navigation = () => {
         { currentUser?.is_admin && (
           <div className="dropdown dropdown-hover">
             <div tabIndex={0} role="button" className="btn btn-ghost flex items-center gap-1">
-              Admin Panel
+              Admin
               <ChevronDown size={14} />
             </div>
             <ul
@@ -33,7 +33,23 @@ const Navigation = () => {
           </div>
         )}
         { currentUser?.is_staff && (
-          <Link to="/staff" className="btn btn-ghost">Staff Dashboard</Link>
+          <div className="dropdown dropdown-hover">
+            <div tabIndex={0} role="button" className="btn btn-ghost flex items-center gap-1">
+              Staff
+              <ChevronDown size={14} />
+            </div>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu menu-md bg-base-200 rounded-box w-52 p-2 shadow z-50 border border-base-content/5"
+            >
+              <li>
+                <Link to="/staff">Dashboard</Link>
+              </li>
+              <li>
+                <Link to="/staff/scan">Scan Tickets</Link>
+              </li>
+            </ul>
+          </div>
         )}
         <Link to="/search" className="btn btn-ghost">Find Movies</Link>
       </div>
