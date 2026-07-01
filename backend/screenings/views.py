@@ -159,11 +159,32 @@ class PurchaseViewSet(viewsets.ModelViewSet):
         return PurchaseSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'list', 'retrieve']:
+        if self.action in ['create', 'list', 'retrieve', 'update', 'partial_update']:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [IsStaffUser]
         return [permission() for permission in permission_classes]
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        is_staff_or_admin = (
+            user.is_superuser
+            or user.groups.filter(name__in=['Staff', 'Admin']).exists()
+        )
+        if not is_staff_or_admin:
+            instance = self.get_object()
+            status_val = request.data.get('status')
+            if status_val and status_val != Purchase.Status.PAID:
+                return Response(
+                    {"detail": "You do not have permission to change status to this value."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            if instance.status != Purchase.Status.PENDING:
+                return Response(
+                    {"detail": "You can only update pending purchases."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        return super().update(request, *args, **kwargs)
 
     def get_queryset(self):
         user: Any = self.request.user
