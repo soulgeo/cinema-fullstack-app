@@ -50,10 +50,10 @@ The system supports three distinct user roles with different access levels and p
     1. The visitor opens the **Sign Up** tab from the top-right menu to register by entering their email, first name, last name, and password.
     2. After registration, they can log in via the **Login** tab in the same menu using their email and password.
 
-![Sign Up Page](/home/twel/dev/cinema/docs/screenshots/signup.png)
+![Sign Up Page](screenshots/signup.png)
 *Figure 1.1: Registration Form for a New Spectator*
 
-![Login Page](/home/twel/dev/cinema/docs/screenshots/login.png)
+![Login Page](screenshots/login.png)
 *Figure 1.2: User Login Form*
 
 ---
@@ -62,7 +62,7 @@ The system supports three distinct user roles with different access levels and p
 *   **Description**: Updating the spectator's personal details and changing the password.
 *   **Workflow**: Once logged in, the spectator can visit the **Account Settings** page from their profile menu. There, they can modify their first name, last name, email, or change their current password for security purposes.
 
-![Account Settings](/home/twel/dev/cinema/docs/screenshots/account_settings.png)
+![Account Settings](screenshots/account_settings.png)
 *Figure 1.3: Personal Information and Account Security Management*
 
 ---
@@ -73,10 +73,10 @@ The system supports three distinct user roles with different access levels and p
     1. On the **Home Page**, the spectator views movies currently airing ("Now Showing") and those coming soon ("Coming Soon").
     2. On the **Search** page, the user can search for movies by typing the title, select a specific screening date, or filter based on the hall and screening time.
 
-![Home Page](/home/twel/dev/cinema/docs/screenshots/home_page.png)
+![Home Page](screenshots/home_page.png)
 *Figure 1.4: Home Page displaying "Now Showing" and "Coming Soon" movies*
 
-![Screening Search](/home/twel/dev/cinema/docs/screenshots/movie_search_page.png)
+![Screening Search](screenshots/movie_search_page.png)
 *Figure 1.5: Screening Search and Filtering Page*
 
 ---
@@ -88,13 +88,13 @@ The system supports three distinct user roles with different access levels and p
     2. Clicking on a showtime redirects them to the hall's virtual layout on the **Booking Page**, where they select their preferred available seats (occupied seats appear disabled).
     3. They then proceed to the **Payment Page**, where they enter their card details to complete the purchase (Note: the page is a simulation; no real transaction takes place). Upon successful payment, the tickets are issued and sent to the user's email.
 
-![Movie Page](/home/twel/dev/cinema/docs/screenshots/movie_page.png)
+![Movie Page](screenshots/movie_page.png)
 *Figure 1.6: Movie Details and List of Available Showtimes*
 
-![Hall Layout](/home/twel/dev/cinema/docs/screenshots/booking_page.png)
+![Hall Layout](screenshots/booking_page.png)
 *Figure 1.7: Interactive Seat Selection from the Layout*
 
-![Payment Checkout](/home/twel/dev/cinema/docs/screenshots/payment_page.png)
+![Payment Checkout](screenshots/payment_page.png)
 *Figure 1.8: Card Details Entry Form for Payment*
 
 ---
@@ -105,10 +105,10 @@ The system supports three distinct user roles with different access levels and p
     1. After a successful purchase, the spectator can view their tickets on the **My Tickets** page. Each ticket contains a unique QR code to be shown at the cinema entrance.
     2. On the **My Purchases** page, a complete history of all user transactions is displayed, including booking details and payment status (Paid / Pending / Cancelled).
 
-![Active Tickets](/home/twel/dev/cinema/docs/screenshots/my_tickets_page.png)
+![Active Tickets](screenshots/my_tickets_page.png)
 *Figure 1.9: Digital Tickets with Embedded QR Codes for Check-In*
 
-![Purchase History](/home/twel/dev/cinema/docs/screenshots/my_purchases_page.png)
+![Purchase History](screenshots/my_purchases_page.png)
 *Figure 1.10: Spectator Purchase and Transaction History*
 
 ---
@@ -121,7 +121,7 @@ The system supports three distinct user roles with different access levels and p
     1. Box office staff log in to their account to access the **Staff Dashboard**.
     2. The dashboard displays all screenings for the current day, sorted by time, along with the real-time seat occupancy for each hall.
 
-![Staff Dashboard](/home/twel/dev/cinema/docs/screenshots/staff_dashboard.png)
+![Staff Dashboard](screenshots/staff_dashboard.png)
 *Figure 2.1: Staff Dashboard displaying Today's Showtimes and Occupancy Statistics*
 
 ---
@@ -133,10 +133,10 @@ The system supports three distinct user roles with different access levels and p
     2. Using the device's camera, they scan the QR code from the customer's mobile phone.
     3. The system verifies the ticket's validity and displays a green success notice, automatically updating the ticket status in the database.
 
-![Scan Prompt](/home/twel/dev/cinema/docs/screenshots/staff_scan_tickets_prompt.png)
+![Scan Prompt](screenshots/staff_scan_tickets_prompt.png)
 *Figure 2.2: Awaiting Ticket QR Code Scan*
 
-![Scan Success](/home/twel/dev/cinema/docs/screenshots/staff_scan_tickets_success.png)
+![Scan Success](screenshots/staff_scan_tickets_success.png)
 *Figure 2.3: Successful Ticket Validation showing Seat and Movie Details*
 
 ---
@@ -149,7 +149,7 @@ The system supports three distinct user roles with different access levels and p
     3. They search for the customer in the database by typing their email or name and select them.
     4. They click the **Book Tickets** button to complete the ticket issuance and reservation under the customer's name.
 
-![Screening Overview and Ticket Issuance](/home/twel/dev/cinema/docs/screenshots/staff_screening_overview.png)
+![Screening Overview and Ticket Issuance](screenshots/staff_screening_overview.png)
 *Figure 2.4: Screening Overview Interface and Seat Selection for Ticket Issuance*
 
 ---
@@ -162,7 +162,7 @@ The system supports three distinct user roles with different access levels and p
     3. They locate the entry in the table and click the **Cancel** button.
     4. Upon confirmation, the system updates the purchase status to "CANCELLED" and automatically releases the corresponding seats in the hall.
 
-![Search Purchases and Cancellations](/home/twel/dev/cinema/docs/screenshots/staff_payment_search.png)
+![Search Purchases and Cancellations](screenshots/staff_payment_search.png)
 *Figure 2.5: Searching Transactions and Managing Purchase Cancellations*
 
 ---
@@ -176,7 +176,7 @@ The system supports three distinct user roles with different access levels and p
     2. They set a date range (From Date - Till Date).
     3. The system dynamically generates charts (pie and line charts) showing total revenue per day, number of tickets sold, and sales percentages per movie.
 
-![Admin Panel Statistics](/home/twel/dev/cinema/docs/screenshots/admin_panel.png)
+![Admin Panel Statistics](screenshots/admin_panel.png)
 *Figure 3.1: Detailed Sales and Revenue Reports with Interactive Charts*
 
 ---
@@ -188,13 +188,13 @@ The system supports three distinct user roles with different access levels and p
     2. They can add a new movie ("Add Movie") by completing the form with the title, duration, category, age rating, release date, cover image URL, and summary.
     3. They can also edit a movie's details or deactivate/delete it.
 
-![Admin Movies List](/home/twel/dev/cinema/docs/screenshots/admin_movie_management.png)
+![Admin Movies List](screenshots/admin_movie_management.png)
 *Figure 3.2: Movie List Management and Search Interface*
 
-![Add Movie Form](/home/twel/dev/cinema/docs/screenshots/admin_add_movie.png)
+![Add Movie Form](screenshots/admin_add_movie.png)
 *Figure 3.3: Form to Add a New Movie*
 
-![Edit Movie Form](/home/twel/dev/cinema/docs/screenshots/admin_edit_movie.png)
+![Edit Movie Form](screenshots/admin_edit_movie.png)
 *Figure 3.4: Form to Modify Existing Movie Details*
 
 ---
@@ -205,13 +205,13 @@ The system supports three distinct user roles with different access levels and p
     1. On the **Manage Halls** page, the admin registers screen halls (e.g., Hall 1, VIP, 3D Max).
     2. They can edit the hall's grid layout (number of rows and seats per row), dynamically configuring the seat map shown to spectators during booking.
 
-![Admin Halls List](/home/twel/dev/cinema/docs/screenshots/admin_hall_management.png)
+![Admin Halls List](screenshots/admin_hall_management.png)
 *Figure 3.5: Screen Hall Management Table*
 
-![Add Hall Form](/home/twel/dev/cinema/docs/screenshots/admin_add_hall.png)
+![Add Hall Form](screenshots/admin_add_hall.png)
 *Figure 3.6: Form to Register a New Hall*
 
-![Hall Layout Design](/home/twel/dev/cinema/docs/screenshots/admin_edit_hall_seats.png)
+![Hall Layout Design](screenshots/admin_edit_hall_seats.png)
 *Figure 3.7: Interactive Grid Seat and Row Layout Configuration*
 
 ---
@@ -223,11 +223,11 @@ The system supports three distinct user roles with different access levels and p
     2. To schedule a screening, they select the movie, the hall, the date, the start time, and the ticket price.
     3. The system automatically checks for schedule overlaps in the chosen hall.
 
-![Admin Screenings Calendar](/home/twel/dev/cinema/docs/screenshots/admin_screening_management.png)
+![Admin Screenings Calendar](screenshots/admin_screening_management.png)
 *Figure 3.8: List of Scheduled Movie Screenings*
 
-![Add Screening Form](/home/twel/dev/cinema/docs/screenshots/admin_add_screening.png)
+![Add Screening Form](screenshots/admin_add_screening.png)
 *Figure 3.9: Form to Schedule a New Movie Screening*
 
-![Edit Screening Form](/home/twel/dev/cinema/docs/screenshots/admin_edit_screening.png)
+![Edit Screening Form](screenshots/admin_edit_screening.png)
 *Figure 3.10: Form to Modify an Existing Screening*
