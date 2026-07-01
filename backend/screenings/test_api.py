@@ -399,3 +399,32 @@ class CinemaAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(int(response.data[0]['client']), self.staff_user.id)
+
+    def test_cancelling_purchase_deletes_tickets_and_releases_seats(self):
+        # Create a purchase and ticket for audience user
+        purchase = Purchase.objects.create(client=self.audience_user, status=Purchase.Status.PENDING)
+        _, salt, hash = generate_secret_salt_and_hash()
+        Ticket.objects.create(
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt,
+            secret_hash=hash,
+            purchase=purchase
+        )
+
+        self.assertEqual(Ticket.objects.count(), 1)
+
+        # Authenticate as staff user
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('purchase-detail', args=[purchase.id])
+
+        # Cancel the purchase
+        response = self.client.patch(url, {'status': 'CANCELLED'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # The purchase status should be CANCELLED and tickets deleted
+        purchase.refresh_from_db()
+        self.assertEqual(purchase.status, 'CANCELLED')
+        self.assertEqual(Ticket.objects.count(), 0)

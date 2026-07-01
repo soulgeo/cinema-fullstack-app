@@ -103,6 +103,8 @@ export type Purchase = {
   cancelled_at?: string;
   total_price: string;
   tickets: Ticket[];
+  client_email?: string;
+  client_name?: string;
 };
 
 export type RichScreening = Omit<Screening, 'movie' | 'hall'> & {

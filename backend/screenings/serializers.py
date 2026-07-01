@@ -74,11 +74,16 @@ class TicketDetailSerializer(serializers.ModelSerializer):
 
 class PurchaseSerializer(serializers.ModelSerializer):
     tickets = TicketDetailSerializer(many=True, read_only=True)
+    client_email = serializers.EmailField(source='client.email', read_only=True)
+    client_name = serializers.SerializerMethodField()
 
     class Meta:  # type: ignore[override]
         model = Purchase
         fields = '__all__'
         read_only_fields = ('client', 'created_at', 'total_price')
+
+    def get_client_name(self, obj):
+        return f"{obj.client.first_name} {obj.client.last_name}".strip() or obj.client.email
 
 
 class PurchaseCreateSerializer(serializers.ModelSerializer):

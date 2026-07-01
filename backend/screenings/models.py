@@ -135,9 +135,11 @@ class Purchase(models.Model):
                 if self.status == self.Status.PAID and old_self.status != self.Status.PAID and not self.paid_at:
                     from django.utils import timezone
                     self.paid_at = timezone.now()
-                elif self.status == self.Status.CANCELLED and old_self.status != self.Status.CANCELLED and not self.cancelled_at:
-                    from django.utils import timezone
-                    self.cancelled_at = timezone.now()
+                elif self.status == self.Status.CANCELLED and old_self.status != self.Status.CANCELLED:
+                    if not self.cancelled_at:
+                        from django.utils import timezone
+                        self.cancelled_at = timezone.now()
+                    self.tickets.all().delete()
             except Purchase.DoesNotExist:
                 pass
         else:

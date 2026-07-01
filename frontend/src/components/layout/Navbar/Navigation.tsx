@@ -48,6 +48,9 @@ const Navigation = () => {
               <li>
                 <Link to="/staff/scan">Scan Tickets</Link>
               </li>
+              <li>
+                <Link to="/staff/purchases">Search Purchases</Link>
+              </li>
             </ul>
           </div>
         )}

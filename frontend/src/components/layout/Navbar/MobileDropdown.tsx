@@ -30,6 +30,9 @@ const MobileDropdown = () => {
             <Link to="/staff/scan" className="w-full flex items-center gap-2 pl-6">
               Scan Tickets
             </Link>
+            <Link to="/staff/purchases" className="w-full flex items-center gap-2 pl-6">
+              Search Purchases
+            </Link>
           </li>
         )}
 

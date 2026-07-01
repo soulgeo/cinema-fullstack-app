@@ -14,6 +14,7 @@ import StaffDashboard from "./components/pages/StaffDashboard";
 import ScreeningOverview from "./components/pages/ScreeningOverview";
 import SearchPage from "./components/pages/SearchPage";
 import ScanTickets from "./components/pages/ScanTickets";
+import StaffPurchases from "./components/pages/StaffPurchases";
 import AdminPanel from "./components/pages/AdminPanel";
 import AdminMovies from "./components/pages/AdminMovies";
 import AdminScreenings from "./components/pages/AdminScreenings";
@@ -94,6 +95,11 @@ const router = createBrowserRouter([
   {
     path: "/staff/scan",
     element: <ScanTickets />,
+    loader: requireStaffLoader,
+  },
+  {
+    path: "/staff/purchases",
+    element: <StaffPurchases />,
     loader: requireStaffLoader,
   },
   {
