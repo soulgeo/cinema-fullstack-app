@@ -116,10 +116,6 @@ const PurchasesPage = () => {
                     </h3>
                     
                     <div className="flex flex-col gap-2">
-                      {/* Note: Tickets in the list might not have screening info unless the API returns it.
-                          In our PurchaseSerializer, we use TicketDetailSerializer which doesn't have screening title.
-                          Let's assume for now we just show the ticket ID and price, 
-                          or we'd need to improve the backend serializer. */}
                       {purchase.tickets.map((ticket) => (
                         <div key={ticket.id} className="flex justify-between items-center text-sm p-3 bg-base-100 rounded-xl border border-base-content/5">
                           <span className="font-medium">Ticket #{ticket.id}</span>
