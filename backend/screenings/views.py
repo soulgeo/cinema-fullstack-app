@@ -48,7 +48,7 @@ class HallViewSet(viewsets.ModelViewSet):
 
 
 class ScreeningViewSet(viewsets.ModelViewSet):
-    queryset = Screening.objects.all().annotate(
+    queryset = Screening.objects.all().select_related('movie', 'hall').annotate(
         tickets_count_annotated=Count('tickets')
     )
     serializer_class = ScreeningSerializer
@@ -61,7 +61,7 @@ class ScreeningViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self) -> Any:  # type: ignore[override]
-        queryset = Screening.objects.all()
+        queryset = Screening.objects.all().select_related('movie', 'hall')
         request: Any = self.request
         movie_id = request.query_params.get('movie')
         hall_id = request.query_params.get('hall')
@@ -125,7 +125,7 @@ class ScreeningViewSet(viewsets.ModelViewSet):
         queryset = Screening.objects.filter(
             start_time__lte=today_end,
             start_time__gte=today_start,
-        ).annotate(tickets_count_annotated=Count('tickets'))
+        ).select_related('movie', 'hall').annotate(tickets_count_annotated=Count('tickets'))
         serializer = ScreeningSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -151,7 +151,7 @@ class SeatViewSet(viewsets.ModelViewSet):
 
 
 class PurchaseViewSet(viewsets.ModelViewSet):
-    queryset = Purchase.objects.all()
+    queryset = Purchase.objects.all().select_related('client').prefetch_related('tickets')
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -171,14 +171,14 @@ class PurchaseViewSet(viewsets.ModelViewSet):
         
         mine = request.query_params.get('mine')
         if mine == 'true':
-            queryset = Purchase.objects.filter(client=user)
+            queryset = Purchase.objects.filter(client=user).select_related('client').prefetch_related('tickets')
         elif (
             user.is_superuser
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
-            queryset = Purchase.objects.all()
+            queryset = Purchase.objects.all().select_related('client').prefetch_related('tickets')
         else:
-            queryset = Purchase.objects.filter(client=user)
+            queryset = Purchase.objects.filter(client=user).select_related('client').prefetch_related('tickets')
 
         from_date = request.query_params.get('from_date')
         till_date = request.query_params.get('till_date')
@@ -210,7 +210,7 @@ class PurchaseViewSet(viewsets.ModelViewSet):
 
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.all().select_related('seat', 'screening', 'screening__movie', 'screening__hall')
 
     def get_serializer_class(self):  # type: ignore[override]
         if self.action in ['create', 'update', 'partial_update']:
@@ -236,12 +236,12 @@ class TicketViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return Ticket.objects.none()
 
-        queryset = Ticket.objects.filter(client=user)
+        queryset = Ticket.objects.filter(client=user).select_related('seat', 'screening', 'screening__movie', 'screening__hall')
         if (
             user.is_superuser
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
-            queryset = Ticket.objects.all()
+            queryset = Ticket.objects.all().select_related('seat', 'screening', 'screening__movie', 'screening__hall')
 
         screening_id = request.query_params.get('screening')
         from_date = request.query_params.get('from_date')
@@ -297,7 +297,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     def my_tickets(self, request):
         queryset = Ticket.objects.filter(
             client=request.user, purchase__status=Purchase.Status.PAID
-        )
+        ).select_related('seat', 'screening', 'screening__movie', 'screening__hall')
         serializer = RichTicketSerializer(queryset, many=True)
         return Response(serializer.data)
 

@@ -41,22 +41,31 @@ const ScreeningOverview = () => {
       const seatsData = await dbApi.seats.listByHall(screeningData.hall.id);
       setSeats(seatsData);
 
-      // Fetch user info for each ticket
+      // Fetch user info for each ticket in parallel
       const uniqueUserIds = Array.from(new Set(ticketsData.map(t => t.client)));
       const usersData: Record<number, User> = { ...users };
+      const missingUserIds = uniqueUserIds.filter(userId => !usersData[userId]);
       
-      for (const userId of uniqueUserIds) {
-        if (!usersData[userId]) {
+      if (missingUserIds.length > 0) {
+        const userPromises = missingUserIds.map(async (userId) => {
           try {
-            usersData[userId] = await dbApi.users.get(userId);
+            const userData = await dbApi.users.get(userId);
+            return { userId, userData };
           } catch {
-            // Ignore if user not found or error
+            return null;
           }
-        }
+        });
+        
+        const results = await Promise.all(userPromises);
+        results.forEach((res) => {
+          if (res) {
+            usersData[res.userId] = res.userData;
+          }
+        });
       }
       setUsers(usersData);
 
-    } catch (err) {
+    } catch {
       toast.error("Failed to fetch screening data");
       navigate("/staff");
     } finally {
@@ -65,7 +74,9 @@ const ScreeningOverview = () => {
   }, [id, navigate, users]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
@@ -115,7 +126,7 @@ const ScreeningOverview = () => {
       setSelectedClient(null);
       setUserSearch("");
       fetchData();
-    } catch (err) {
+    } catch {
       toast.error("Failed to book tickets");
     } finally {
       setBookingLoading(false);
