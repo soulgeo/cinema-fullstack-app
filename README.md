@@ -15,6 +15,7 @@ Below are instructions on how to run the application on a development environmen
 1.  **Clone this repository:**
     ```bash
     git clone https://github.com/soulgeo/cinema-fullstack-app.git
+    cd cinema-fullstack-app/
     ```
 
 2.  **Set up environment variables:**
