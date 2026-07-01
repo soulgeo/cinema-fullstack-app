@@ -86,7 +86,9 @@ The system supports three distinct user roles with different access levels and p
 *   **Workflow**:
     1. The spectator selects a movie to view its details (duration, summary, category) and its available showtimes on the **Movie Page**.
     2. Clicking on a showtime redirects them to the hall's virtual layout on the **Booking Page**, where they select their preferred available seats (occupied seats appear disabled).
-    3. They then proceed to the **Payment Page**, where they enter their card details to complete the purchase (Note: the page is a simulation; no real transaction takes place). Upon successful payment, the tickets are issued and sent to the user's email.
+    3. They then proceed to the **Payment Page**, where they enter their card details to complete the purchase (Note: the page is a simulation; no real transaction takes place). Upon successful payment, the tickets are issued and sent to the user's email. 
+
+*   **Note**: In this development environment, the confirmation email containing the ticket details is printed directly to the backend console (Django console) instead of being sent to a real email address.
 
 ![Movie Page](screenshots/movie_page.png)
 *Figure 1.6: Movie Details and List of Available Showtimes*

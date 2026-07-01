@@ -40,6 +40,16 @@ Below are instructions on how to run the application on a development environmen
 
 The frontend application will be available at `http://localhost:5173`. The backend (Django) will run at `http://localhost:8000`.
 
+## Email Delivery (Development)
+
+In this development environment, outbound emails (such as ticket confirmation emails with QR code details) are printed directly to the backend terminal console (Django console) instead of being sent to actual email addresses.
+
+### How to Preview Ticket QR Codes:
+1. Locate the printed email in the backend terminal console (Django container logs).
+2. Scroll to the bottom to find the base64-encoded PNG image attachment block (under `Content-Type: image/png` and `Content-Transfer-Encoding: base64`).
+3. Copy the base64 string block.
+4. Open a browser and enter the copied string in the address bar prefixed with `data:image/png;base64,` (for example: `data:image/png;base64,iVBORw0KGgoAAAANS...`) to render the QR code on your screen, which can then be scanned by the cashier validation scanner.
+
 ## Demo Credentials
 
 You can use the following default accounts to log in and test different user roles:
