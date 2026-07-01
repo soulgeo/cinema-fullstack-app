@@ -126,11 +126,13 @@ export const dbApi = {
     list: (params?: { 
       from_date?: string; 
       till_date?: string;
+      mine?: boolean;
     }) => {
       const query = params 
         ? "?" + new URLSearchParams(Object.entries(params)
             .filter((entry) => entry[1] !== undefined)
-            .map(([k, v]) => [k, String(v)]))
+            .map(([k, v]) => [k, String(v)])
+          ).toString()
         : "";
       return dbRequest<Purchase[]>(`/purchases/${query}`);
     },

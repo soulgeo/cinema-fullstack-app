@@ -17,7 +17,7 @@ const PurchasesPage = () => {
   const fetchPurchases = async () => {
     try {
       setLoading(true);
-      const data = await dbApi.purchases.list();
+      const data = await dbApi.purchases.list({ mine: true });
       // Sort by newest first
       setPurchases(data.sort((a, b) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -31,6 +31,7 @@ const PurchasesPage = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPurchases();
   }, []);
 

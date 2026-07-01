@@ -339,3 +339,63 @@ class CinemaAPITestCase(APITestCase):
         ticket: Any = Ticket.objects.first()
         self.assertEqual(ticket.client, self.audience_user)
         self.assertEqual(ticket.purchase, purchase)
+
+    def test_staff_and_admin_can_filter_own_purchases(self):
+        # Create a purchase for the audience user
+        Purchase.objects.create(client=self.audience_user, total_price=Decimal('10.00'))
+        # Create a purchase for the staff user
+        Purchase.objects.create(client=self.staff_user, total_price=Decimal('15.00'))
+
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('purchase-list')
+
+        # Without ?mine=true, staff should see all purchases (2 purchases)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+        # With ?mine=true, staff should only see their own purchases (1 purchase)
+        response = self.client.get(f"{url}?mine=true")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(int(response.data[0]['client']), self.staff_user.id)
+
+    def test_my_tickets_endpoint_only_returns_own_tickets_for_all_users(self):
+        # Create a paid purchase and ticket for audience user
+        audience_purchase = Purchase.objects.create(client=self.audience_user, status=Purchase.Status.PAID)
+        _, salt1, hash1 = generate_secret_salt_and_hash()
+        Ticket.objects.create(
+            client=self.audience_user,
+            screening=self.screening,
+            seat=self.seat,
+            salt=salt1,
+            secret_hash=hash1,
+            purchase=audience_purchase
+        )
+
+        # Create a paid purchase and ticket for staff user
+        staff_purchase = Purchase.objects.create(client=self.staff_user, status=Purchase.Status.PAID)
+        seat2 = Seat.objects.create(
+            hall=self.hall, row_label="A", seat_number=2, grid_x=1, grid_y=2
+        )
+        _, salt2, hash2 = generate_secret_salt_and_hash()
+        Ticket.objects.create(
+            client=self.staff_user,
+            screening=self.screening,
+            seat=seat2,
+            salt=salt2,
+            secret_hash=hash2,
+            purchase=staff_purchase
+        )
+
+        # Authenticate as staff user
+        cl: Any = self.client
+        cl.force_authenticate(user=self.staff_user)
+        url = reverse('ticket-my-tickets')
+
+        # Staff should only see their own ticket (1 ticket), not the audience user's ticket
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(int(response.data[0]['client']), self.staff_user.id)

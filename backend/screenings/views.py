@@ -168,12 +168,17 @@ class PurchaseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user: Any = self.request.user
         request: Any = self.request
-        queryset = Purchase.objects.filter(client=user)
-        if (
+        
+        mine = request.query_params.get('mine')
+        if mine == 'true':
+            queryset = Purchase.objects.filter(client=user)
+        elif (
             user.is_superuser
             or user.groups.filter(name__in=['Staff', 'Admin']).exists()
         ):
             queryset = Purchase.objects.all()
+        else:
+            queryset = Purchase.objects.filter(client=user)
 
         from_date = request.query_params.get('from_date')
         till_date = request.query_params.get('till_date')
